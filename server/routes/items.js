@@ -80,7 +80,7 @@ router.get('/', (req, res) => {
 
     // Filter overdue items
     if (overdue === 'true') {
-      const today = new Date().toISOString().split('T')[0];
+      const today = new Date().toLocaleDateString('en-CA'); // Use local date (YYYY-MM-DD format)
       filteredItems = filteredItems.filter(item => {
         const isNotCompleted = item.status !== 'Completed' && item.status !== 'Cancelled';
         const isOverdue = item.targetDate && item.targetDate < today;

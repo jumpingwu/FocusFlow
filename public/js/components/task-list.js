@@ -107,6 +107,7 @@ class TaskList {
     let filtered = items;
 
     // Filter out archived items (check for archivedAt or archivedBy metadata)
+    // Do this first for all filters
     filtered = filtered.filter(item => !item.archivedAt && !item.archivedBy);
 
     // Apply today filter
@@ -118,6 +119,12 @@ class TaskList {
         const isUrgencyBurning = item.urgency === 'Burning';
         return isTargetToday || isUrgencyToday || isUrgencyBurning;
       });
+    }
+
+    // For overdue filter, don't apply any additional filtering
+    // The backend already handles the overdue logic
+    if (this.currentFilter === 'overdue') {
+      return filtered;
     }
 
     return filtered;
