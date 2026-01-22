@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FocusFlow - Personal Productivity System</title>
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/animations.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Pane 1: Navigation & Filters (250px) -->
+    <aside class="pane pane-left">
+      <div class="sidebar-header">
+        <h1 class="app-title">FocusFlow</h1>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="smart-filters">
+          <button class="filter-btn active" data-filter="inbox">
+            <span class="filter-icon">📥</span>
+            <span class="filter-label">Inbox</span>
+          </button>
+          <button class="filter-btn" data-filter="today">
+            <span class="filter-icon">📅</span>
+            <span class="filter-label">Today</span>
+          </button>
+          <button class="filter-btn" data-filter="overdue">
+            <span class="filter-icon">⚠️</span>
+            <span class="filter-label">Overdue</span>
+            <span class="overdue-badge" id="overdue-badge">0</span>
+          </button>
+          <button class="filter-btn" data-filter="archived">
+            <span class="filter-icon">📦</span>
+            <span class="filter-label">Archived</span>
+            <span class="overdue-badge" id="archived-badge">0</span>
+          </button>
+        </div>
+
+        <div class="category-section">
+          <h3 class="category-header">Categories</h3>
+          <div class="category-list" id="category-list">
+            <!-- Dynamic categories will be inserted here -->
+          </div>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Pane 2: Task List (Flexible) -->
+    <main class="pane pane-center">
+      <!-- Ghost Bar: Quick Capture & Search -->
+      <div class="ghost-bar" id="ghost-bar">
+        <div class="ghost-input-wrapper">
+          <input
+            type="text"
+            class="ghost-input"
+            id="ghost-input"
+            placeholder="Search or capture (Ctrl+Enter)..."
+            autocomplete="off"
+          >
+          <button class="ghost-clear" id="ghost-clear" title="Clear">×</button>
+        </div>
+        <div class="ghost-controls">
+          <button class="ghost-toggle" id="type-toggle" title="Toggle Task/Idea">
+            <span class="type-label">Task</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Task List with Matrix Grouping -->
+      <div class="task-list-container" id="task-list-container">
+        <!-- Matrix sections will be dynamically inserted -->
+      </div>
+    </main>
+
+    <!-- Pane 3: Detail Panel (420px) -->
+
+        <aside class="pane pane-right" id="detail-panel">
+
+          <div class="detail-panel-content">
+
+            <div class="detail-header">
+
+              <h2 class="detail-title" id="detail-title">Select an item</h2>
+
+              <div class="detail-header-controls">
+
+                <button class="menu-btn" id="detail-menu-btn" title="More options">⋮</button>
+
+                <button class="close-btn" id="close-detail" title="Close (Esc)">✕</button>
+
+              </div>
+
+            </div>
+
+            <!-- Menu dropdown -->
+
+                                <div class="menu-dropdown" id="detail-menu-dropdown" style="display: none;">
+
+                                  <div class="menu-item" id="menu-save">
+
+                                    <span class="menu-icon">💾</span>
+
+                                    <span class="menu-label">Save</span>
+
+                                  </div>
+
+                                  <div class="menu-item" id="menu-archive">
+
+                                    <span class="menu-icon">📦</span>
+
+                                    <span class="menu-label">Archive Item</span>
+
+                                  </div>
+
+                                  <div class="menu-item" id="menu-restore">
+
+                                    <span class="menu-icon">↩</span>
+
+                                    <span class="menu-label">Restore Item</span>
+
+                                  </div>
+
+                                  <div class="menu-item danger" id="menu-permanent-delete">
+
+                                    <span class="menu-icon">🗑</span>
+
+                                    <span class="menu-label">Permanently Delete</span>
+
+                                  </div>
+
+                                </div>
+
+            <div class="detail-body" id="detail-body">
+
+              <!-- Detail content will be dynamically inserted -->
+
+              <p class="empty-state">Select a task or idea to view details</p>
+
+            </div>
+
+          </div>
+
+        </aside>
+  </div>
+
+  <!-- Daily Review Modal -->
+  <div class="modal-overlay" id="daily-review-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Daily Review</h2>
+        <span class="modal-subtitle">You have overdue items to review</span>
+      </div>
+      <div class="modal-body" id="review-modal-body">
+        <!-- Overdue items will be dynamically inserted -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="review-skip">Skip for now</button>
+        <button class="btn btn-primary" id="review-complete">Complete Review</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/utils/api.js"></script>
+  <script src="/js/utils/helpers.js"></script>
+  <script src="/js/utils/storage.js"></script>
+  <script src="/js/components/ghost-bar.js"></script>
+  <script src="/js/components/sidebar.js"></script>
+  <script src="/js/components/task-list.js"></script>
+  <script src="/js/components/rich-text-editor.js"></script>
+  <script src="/js/components/creatable-select.js"></script>
+  <script src="/js/components/detail-panel.js"></script>
+  <script src="/js/components/attachments-gallery.js"></script>
+  <script src="/js/components/log-history.js"></script>
+  <script src="/js/components/daily-review-modal.js"></script>
+  <script src="/js/utils/shortcuts.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
