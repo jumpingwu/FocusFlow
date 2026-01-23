@@ -8,10 +8,13 @@ A personal productivity system with task and idea management.
 - Dynamic category management
 - Automated audit logging with versioning
 - Daily review mechanism for overdue tasks
-- Rich text editor with image support
+- Rich text editor with markdown support
+- Rich text pasting (HTML to markdown conversion)
+- Image support (paste, drag-drop, upload)
 - File attachments (drag-drop and paste)
 - Search and filtering
 - Keyboard shortcuts
+- Archive system for completed/cancelled items
 
 ## Getting Started
 
@@ -36,27 +39,51 @@ Then open your browser and navigate to `http://localhost:3000`
 ## Project Structure
 
 ```
-focusflow/
+todo_list_2/
 ├── server.js                 # Express server entry point
-├── data.json                 # Data storage
+├── data.json                 # Main data storage
+├── data.json.bak             # Data backup file
+├── data_archive.json         # Archived items storage (git-ignored)
 ├── package.json              # Dependencies
 ├── server/                   # Backend logic
 │   ├── data-manager.js       # Data layer
 │   ├── validators.js         # Data validation
-│   ├── audit-logger.js       # Audit logging
-│   ├── daily-review.js       # Daily review logic
 │   └── routes/               # API routes
-│       ├── items.js
-│       ├── upload.js
-│       └── categories.js
+│       ├── items.js          # Item CRUD, archive, filter operations
+│       ├── upload.js         # File upload handling
+│       ├── categories.js     # Category CRUD operations
+│       └── review.js         # Daily review endpoints
 ├── public/                   # Frontend assets
 │   ├── index.html            # Main page
 │   ├── css/                  # Stylesheets
+│   │   ├── variables.css     # CSS variables
+│   │   ├── layout.css        # Layout styles
+│   │   ├── components.css    # Component styles
+│   │   └── animations.css    # Animation styles
 │   ├── js/                   # JavaScript
+│   │   ├── app.js            # Main application logic
 │   │   ├── components/       # UI components
-│   │   └── utils/            # Utilities
-│   └── modals/               # Modal templates
-└── uploads/                  # File uploads directory
+│   │   │   ├── task-list.js  # Task list component
+│   │   │   ├── detail-panel.js    # Item detail panel
+│   │   │   ├── rich-text-editor.js # Rich text editor
+│   │   │   ├── attachments-gallery.js # File attachments
+│   │   │   ├── log-history.js # Progress log history
+│   │   │   ├── daily-review-modal.js # Daily review modal
+│   │   │   ├── sidebar.js    # Category sidebar
+│   │   │   ├── ghost-bar.js  # Search/capture bar
+│   │   │   └── creatable-select.js # Select component
+│   │   └── utils/            # Utility functions
+│   │       ├── api.js        # API client
+│   │       ├── helpers.js    # Helper functions (markdown parsing)
+│   │       ├── shortcuts.js  # Keyboard shortcuts
+│   │       └── storage.js    # Local storage utilities
+│   └── modals/               # Modal templates (empty, uses JS-generated modals)
+├── uploads/                  # File uploads directory
+├── requirements/             # Documentation
+│   └── PRD.md                # Product requirements document
+└── designs/                  # Design documentation
+    ├── UI_UX_design.md       # UI/UX design specifications
+    └── archiving_design.md   # Archive system design
 ```
 
 ## Keyboard Shortcuts
@@ -65,6 +92,63 @@ focusflow/
 - `Cmd/Ctrl + Enter` - Create new task or Save and Close Detail Panel
 - `Ctrl + 1/2/3` - Set Status (Todo / In-Progress / Pending)
 - `Esc` - Clear search or Close current panel/modal
+
+## Usage Tips
+
+### Rich Text Editor
+
+The Notes and Progress Update fields support markdown rendering. Toggle between **Edit** and **View** modes using the button next to the field label.
+
+**Markdown Features:**
+- **Bold**: `**text**`
+- **Italic**: `*text*`
+- **Links**: `[text](url)`
+- **Images**: `![alt](url)`
+- **Code**: `` `code` `` (inline) or ``` ```code``` ``` (block)
+- **Headers**: `# Heading 1`, `## Heading 2`, etc.
+- **Lists**: `- item` (unordered) or `1. item` (ordered)
+- **Tables**: Use pipe syntax `| Header | Header |`
+
+### Rich Text Pasting
+
+When in edit mode, use the "Paste rich text" toggle to enable HTML-to-markdown conversion:
+
+- **Toggle OFF (gray)**: Plain text pasting (default)
+- **Toggle ON (blue)**: Rich text pasting - converts HTML from web pages to markdown
+
+Supported conversions:
+- Links (preserves URLs)
+- Tables
+- Lists (ordered and unordered)
+- Headers
+- Bold and italic text
+- Images
+
+### Daily Review
+
+Use the Daily Review feature to manage overdue tasks:
+- Click the review icon in the sidebar
+- Review each overdue item and take action (Complete, Archive, or Keep)
+- The system tracks your last review date
+
+### Archiving
+
+Archived items are stored separately in `data_archive.json`:
+- Archive items via the Detail Panel or Daily Review
+- Archived items are removed from the main list
+- Archive data is not tracked by git
+
+### Attachments
+
+- Drag and drop files onto the Detail Panel
+- Paste images directly into Notes or Progress Update fields
+- Supported formats: PNG, JPG, GIF, WEBP, SVG, BMP
+
+### Categories
+
+- Create categories dynamically when adding/editing items
+- Filter items by category from the sidebar
+- Categories are automatically managed
 
 ## License
 
