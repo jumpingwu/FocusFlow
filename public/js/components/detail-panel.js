@@ -312,7 +312,10 @@ class DetailPanel {
         <label class="form-label" for="detail-notes">Notes</label>
         <div class="notes-header">
           <button class="btn btn-secondary btn-sm" id="notes-toggle" title="Toggle edit/view" aria-label="Toggle notes view/edit mode">View</button>
-          <button class="btn btn-secondary btn-sm" id="notes-paste-mode" title="Toggle paste mode" aria-label="Toggle paste mode">Plain Text Paste</button>
+          <div class="paste-mode-toggle" id="notes-paste-mode-container">
+            <div class="paste-mode-switch" id="notes-paste-mode-switch" title="Toggle rich text paste"></div>
+            <span class="paste-mode-label">Paste rich text</span>
+          </div>
         </div>
         <div class="notes-content">
           <textarea class="form-textarea" id="detail-notes" rows="8" placeholder="Add notes...">${window.helpers.escapeHtml(item.notes)}</textarea>
@@ -340,7 +343,10 @@ class DetailPanel {
         <label class="form-label" for="detail-log">Progress Update</label>
         <div class="notes-header">
           <button class="btn btn-secondary btn-sm" id="log-toggle" title="Toggle edit/view" aria-label="Toggle progress update view/edit mode">View</button>
-          <button class="btn btn-secondary btn-sm" id="log-paste-mode" title="Toggle paste mode" aria-label="Toggle paste mode">Plain Text Paste</button>
+          <div class="paste-mode-toggle" id="log-paste-mode-container">
+            <div class="paste-mode-switch" id="log-paste-mode-switch" title="Toggle rich text paste"></div>
+            <span class="paste-mode-label">Paste rich text</span>
+          </div>
         </div>
         <div class="notes-content">
           <textarea class="form-textarea" id="detail-log" rows="3" placeholder="Add a progress update..."></textarea>
@@ -521,6 +527,11 @@ class DetailPanel {
                 notesTextarea.style.display = 'block';
                 notesRendered.style.display = 'none';
                 notesToggle.textContent = 'View';
+                // Show paste mode toggle
+                const notesPasteModeContainer = document.getElementById('notes-paste-mode-container');
+                if (notesPasteModeContainer) {
+                  notesPasteModeContainer.style.display = 'flex';
+                }
               } else {
                 // Switch to view mode - render markdown
                 const notesContent = notesTextarea.value;
@@ -528,6 +539,11 @@ class DetailPanel {
                 notesTextarea.style.display = 'none';
                 notesRendered.style.display = 'block';
                 notesToggle.textContent = 'Edit';
+                // Hide paste mode toggle
+                const notesPasteModeContainer = document.getElementById('notes-paste-mode-container');
+                if (notesPasteModeContainer) {
+                  notesPasteModeContainer.style.display = 'none';
+                }
               }
             });
           }
@@ -537,15 +553,33 @@ class DetailPanel {
             this.notesEditor = new window.RichTextEditor('detail-notes');
           }
 
-          // Wire up paste mode toggle for notes
-          const notesPasteModeBtn = document.getElementById('notes-paste-mode');
-          if (notesPasteModeBtn && this.notesEditor) {
-            notesPasteModeBtn.addEventListener('click', () => {
+          // Wire up paste mode toggle switch for notes
+          const notesPasteModeSwitch = document.getElementById('notes-paste-mode-switch');
+          if (notesPasteModeSwitch && this.notesEditor) {
+            // Set initial state (plain text = off, rich text = on)
+            const initialMode = this.notesEditor.getPasteMode();
+            if (initialMode === 'rich') {
+              notesPasteModeSwitch.classList.add('active');
+            }
+
+            notesPasteModeSwitch.addEventListener('click', () => {
               const currentMode = this.notesEditor.getPasteMode();
               const newMode = currentMode === 'plain' ? 'rich' : 'plain';
               this.notesEditor.setPasteMode(newMode);
-              notesPasteModeBtn.textContent = newMode === 'plain' ? 'Plain Text Paste' : 'Rich Text Paste';
+              
+              // Update visual state
+              if (newMode === 'rich') {
+                notesPasteModeSwitch.classList.add('active');
+              } else {
+                notesPasteModeSwitch.classList.remove('active');
+              }
             });
+          }
+
+          // Set initial paste mode toggle visibility based on edit mode
+          const notesPasteModeContainer = document.getElementById('notes-paste-mode-container');
+          if (notesPasteModeContainer) {
+            notesPasteModeContainer.style.display = isEditMode ? 'flex' : 'none';
           }
 
           // Progress update toggle (view/edit mode) - only for active items
@@ -571,6 +605,11 @@ class DetailPanel {
                   logTextarea.style.display = 'block';
                   logRendered.style.display = 'none';
                   logToggle.textContent = 'View';
+                  // Show paste mode toggle
+                  const logPasteModeContainer = document.getElementById('log-paste-mode-container');
+                  if (logPasteModeContainer) {
+                    logPasteModeContainer.style.display = 'flex';
+                  }
                 } else {
                   // Switch to view mode - render markdown
                   const logContent = logTextarea.value;
@@ -578,6 +617,11 @@ class DetailPanel {
                   logTextarea.style.display = 'none';
                   logRendered.style.display = 'block';
                   logToggle.textContent = 'Edit';
+                  // Hide paste mode toggle
+                  const logPasteModeContainer = document.getElementById('log-paste-mode-container');
+                  if (logPasteModeContainer) {
+                    logPasteModeContainer.style.display = 'none';
+                  }
                 }
               });
             }
@@ -587,15 +631,33 @@ class DetailPanel {
               this.logEditor = new window.RichTextEditor('detail-log');
             }
 
-            // Wire up paste mode toggle for progress update
-            const logPasteModeBtn = document.getElementById('log-paste-mode');
-            if (logPasteModeBtn && this.logEditor) {
-              logPasteModeBtn.addEventListener('click', () => {
+            // Wire up paste mode toggle switch for progress update
+            const logPasteModeSwitch = document.getElementById('log-paste-mode-switch');
+            if (logPasteModeSwitch && this.logEditor) {
+              // Set initial state (plain text = off, rich text = on)
+              const initialMode = this.logEditor.getPasteMode();
+              if (initialMode === 'rich') {
+                logPasteModeSwitch.classList.add('active');
+              }
+
+              logPasteModeSwitch.addEventListener('click', () => {
                 const currentMode = this.logEditor.getPasteMode();
                 const newMode = currentMode === 'plain' ? 'rich' : 'plain';
                 this.logEditor.setPasteMode(newMode);
-                logPasteModeBtn.textContent = newMode === 'plain' ? 'Plain Text Paste' : 'Rich Text Paste';
+                
+                // Update visual state
+                if (newMode === 'rich') {
+                  logPasteModeSwitch.classList.add('active');
+                } else {
+                  logPasteModeSwitch.classList.remove('active');
+                }
               });
+            }
+
+            // Set initial paste mode toggle visibility based on edit mode
+            const logPasteModeContainer = document.getElementById('log-paste-mode-container');
+            if (logPasteModeContainer) {
+              logPasteModeContainer.style.display = isLogEditMode ? 'flex' : 'none';
             }
           }
 
