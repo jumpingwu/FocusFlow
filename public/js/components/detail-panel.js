@@ -103,7 +103,7 @@ class DetailPanel {
         this.close();
         this.closeMenu();
       }
-      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && this.panel.classList.contains('open')) {
+      if (e.altKey && e.key === 'Enter' && this.panel.classList.contains('open')) {
         // Don't save if item is archived
         if (this.currentItem && (this.currentItem.archivedAt || this.currentItem.archivedBy)) {
           return;
@@ -130,7 +130,15 @@ class DetailPanel {
 
       // Open panel
       this.panel.classList.add('open');
-      
+
+      // Focus on title input (use requestAnimationFrame to ensure DOM is rendered)
+      requestAnimationFrame(() => {
+        const titleInput = document.getElementById('detail-title-input');
+        if (titleInput && !titleInput.disabled) {
+          titleInput.focus();
+        }
+      });
+
       // Reload categories for creatable select
       await this.reloadCategories();
     } catch (error) {
@@ -174,6 +182,14 @@ class DetailPanel {
 
       // Open panel
       this.panel.classList.add('open');
+
+      // Focus on title input (use requestAnimationFrame to ensure DOM is rendered)
+      requestAnimationFrame(() => {
+        const titleInput = document.getElementById('detail-title-input');
+        if (titleInput && !titleInput.disabled) {
+          titleInput.focus();
+        }
+      });
       
       // Reload categories for creatable select
       await this.reloadCategories();

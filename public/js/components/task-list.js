@@ -5,6 +5,7 @@ class TaskList {
   constructor() {
     this.container = document.getElementById('task-list-container');
     this.items = [];
+    this.displayedItems = []; // Items in the order they're displayed
     this.currentFilter = 'inbox';
     this.currentCategory = null;
     this.searchQuery = '';
@@ -135,11 +136,16 @@ class TaskList {
 
     if (this.items.length === 0) {
       this.container.innerHTML = '<p class="empty-state">No items found</p>';
+      this.displayedItems = [];
       return;
     }
 
     // Group items by matrix quadrant
     const groups = window.helpers.groupItemsByMatrix(this.items);
+
+    // Build displayed items array in the order they're rendered
+    this.displayedItems = [];
+    this.displayedItems = [...(groups.burning || []), ...(groups.today || []), ...(groups.other || []), ...(groups.ideas || [])];
 
     // Render each group
     this.renderGroup('CRITICAL & BURNING', groups.burning);
@@ -153,6 +159,7 @@ class TaskList {
 
     if (this.items.length === 0) {
       this.container.innerHTML = '<p class="empty-state">No archived items found</p>';
+      this.displayedItems = [];
       return;
     }
 
@@ -162,6 +169,9 @@ class TaskList {
       archivedAt: archived.archivedAt,
       archivedBy: archived.archivedBy
     }));
+
+    // Set displayed items to the normalized archived items
+    this.displayedItems = normalizedItems;
 
     // Create a single section for archived items
     this.renderGroup('ARCHIVED ITEMS', normalizedItems, true);
@@ -340,6 +350,46 @@ class TaskList {
         document.dispatchEvent(event);
       }
     }
+  }
+
+  navigateUp() {
+    if (this.displayedItems.length === 0) return;
+
+    // Find current index in displayed order
+    let currentIndex = -1;
+    if (this.selectedItemId) {
+      currentIndex = this.displayedItems.findIndex(item => item.id === this.selectedItemId);
+    }
+
+    // If no item selected, select the last one
+    if (currentIndex === -1) {
+      this.openDetail(this.displayedItems[this.displayedItems.length - 1].id);
+      return;
+    }
+
+    // Move to previous item (wrap around to last if at first)
+    const newIndex = currentIndex === 0 ? this.displayedItems.length - 1 : currentIndex - 1;
+    this.openDetail(this.displayedItems[newIndex].id);
+  }
+
+  navigateDown() {
+    if (this.displayedItems.length === 0) return;
+
+    // Find current index in displayed order
+    let currentIndex = -1;
+    if (this.selectedItemId) {
+      currentIndex = this.displayedItems.findIndex(item => item.id === this.selectedItemId);
+    }
+
+    // If no item selected, select the first one
+    if (currentIndex === -1) {
+      this.openDetail(this.displayedItems[0].id);
+      return;
+    }
+
+    // Move to next item (wrap around to first if at last)
+    const newIndex = currentIndex === this.displayedItems.length - 1 ? 0 : currentIndex + 1;
+    this.openDetail(this.displayedItems[newIndex].id);
   }
 }
 

@@ -10,19 +10,19 @@ class Shortcuts {
 
   init() {
     // Register default shortcuts
-    this.register('Cmd+F', () => {
+    this.register('Alt+F', () => {
       if (window.ghostBar) {
         window.ghostBar.focus();
       }
     });
 
-    this.register('Cmd+N', () => {
+    this.register('Alt+N', () => {
       if (window.ghostBar) {
         window.ghostBar.focus();
       }
     });
 
-    this.register('Cmd+Enter', () => {
+    this.register('Alt+Enter', () => {
       // Handled by ghost-bar and detail-panel
     });
 
@@ -48,6 +48,18 @@ class Shortcuts {
 
     this.register('Escape', () => {
       // Handled by detail-panel and modal
+    });
+
+    this.register('Alt+ArrowUp', () => {
+      if (window.taskList) {
+        window.taskList.navigateUp();
+      }
+    });
+
+    this.register('Alt+ArrowDown', () => {
+      if (window.taskList) {
+        window.taskList.navigateDown();
+      }
     });
 
     // Listen for keyboard events

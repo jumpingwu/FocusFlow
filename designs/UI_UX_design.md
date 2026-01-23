@@ -70,11 +70,11 @@ Based on the "Zen Writer" aesthetic, the interface prioritizes whitespace, typog
 
 -   **The "Ghost" Quick Capture & Search:** \* A floating bar at the top with a `30px` blur backdrop.
     
-    -   **Dual Functionality:** When empty, it shows a subtle "Search or capture..." placeholder.
+    -   **Dual Functionality:** When empty, it shows a subtle "Search or capture (Alt+Enter)..." placeholder.
         
     -   **Search Trigger:** Typing filters the list below in real-time. A small "✕" appears to clear search.
         
-    -   **Capture Trigger (Two-Step):** Pressing `Cmd/Ctrl + Enter` opens the Detail Panel in creation mode with the title pre-filled. Users can then add notes, set priority/urgency, target date, and category before finalizing. All fields except title are optional.
+    -   **Capture Trigger (Two-Step):** Pressing `Alt + Enter` opens the Detail Panel in creation mode with the title pre-filled. Users can then add notes, set priority/urgency, target date, and category before finalizing. All fields except title are optional.
         
 -   **Comfortable List (2B):** `56px` row height.
     
@@ -121,7 +121,9 @@ Based on the "Zen Writer" aesthetic, the interface prioritizes whitespace, typog
     This ensures that urgent items are properly scheduled for the current day.
     
 -   **Status Selection:** Custom pill-selector: `Todo`, `In-progress`, `Pending`, `Completed`, `Cancelled`, `Archived`.
-    
+
+    -   **Keyboard Shortcuts:** Use `Alt + 1/2/3/4/5` to quickly set status (Todo / In-progress / Pending / Completed / Cancelled) - only available when Detail Panel is open.
+
     -   **Active State:** Selected status displays with solid background color, white text, and subtle shadow for clear visual distinction.
     
     -   **Inactive State:** Unselected statuses show light transparent background with colored text.
@@ -160,8 +162,14 @@ Based on the "Zen Writer" aesthetic, the interface prioritizes whitespace, typog
 ### 4.3. Rich Content & Attachments
 
 -   **Inline Rendering:** Pasted images show a thumbnail in the Notes editor, which expands to full size when clicked.
-    
+
 -   **Auto-linking:** Any text starting with `http`, `www`, or `localhost` must immediately turn into a clickable link style.
+
+-   **Rich Text Pasting:** When in edit mode, use the "Paste rich text" toggle to enable HTML-to-markdown conversion:
+    - **Toggle OFF (gray):** Plain text pasting (default)
+    - **Toggle ON (blue):** Rich text pasting - converts HTML from web pages to markdown
+    - Supported conversions: Links (preserves URLs), Tables, Lists (ordered and unordered), Headers, Bold and italic text, Images
+    - Toggle is only visible in edit mode, hidden in view mode
     
 
 ### 4.4. The Daily Review Modal
@@ -173,7 +181,7 @@ Based on the "Zen Writer" aesthetic, the interface prioritizes whitespace, typog
 
 ### 4.5. Two-Step Task Creation
 
--   **Step 1 - Quick Capture:** User types title in Ghost Bar and toggles between Task/Idea. Pressing `Cmd/Ctrl + Enter` opens the Detail Panel in creation mode.
+-   **Step 1 - Quick Capture:** User types title in Ghost Bar and toggles between Task/Idea. Pressing `Alt + Enter` opens the Detail Panel in creation mode.
     
 -   **Step 2 - Detailed Entry:** Detail Panel opens with pre-filled title. Users can optionally add:
     - Notes (rich text with full markdown support)
@@ -195,7 +203,7 @@ Based on the "Zen Writer" aesthetic, the interface prioritizes whitespace, typog
         - **Drag & Drop:** Drag image files into the field
     
 -   **Save vs Cancel:**
-    - Press `Cmd/Ctrl + Enter` to create the item
+    - Press `Alt + Enter` to create the item
     - Press `Esc` or click X to cancel (no item created)
     
 -   **Idea Handling:** When Type = "Idea", Priority/Urgency/TargetDate fields are hidden (per PRD 4.1).
@@ -203,14 +211,40 @@ Based on the "Zen Writer" aesthetic, the interface prioritizes whitespace, typog
 -   **Benefits:** Reuses existing Detail Panel UI, maintains consistency between creation and editing, allows users to create with just title or full details as needed.
     
 
-## 5\. Implementation Shortcuts
+## 5\. Keyboard Shortcuts & Navigation
 
--   **`Cmd + F` / `Cmd + N`:** Focus the Ghost Bar (Search/Capture).
+### 5.1. Global Shortcuts
+
+-   **`Alt + F` / `Alt + N`:** Focus the Ghost Bar (Search/Capture).
     
--   **`Cmd + Enter` (Ghost Bar):** Open Detail Panel in creation mode with pre-filled title.
+-   **`Alt + Enter` (Ghost Bar):** Open Detail Panel in creation mode with pre-filled title.
     
--   **`Cmd + Enter` (Detail Panel):** Save and close (creates new item in creation mode, updates existing in edit mode).
+-   **`Alt + Enter` (Detail Panel):** Save and close (creates new item in creation mode, updates existing in edit mode).
     
--   **`Ctrl + 1 / 2 / 3`:** Set Status (Todo / In-Progress / Pending).
+-   **`Alt + 1 / 2 / 3 / 4 / 5`:** Set Status (Todo / In-progress / Pending / Completed / Cancelled) - only available when Detail Panel is open.
     
 -   **`Esc`:** Clear search or Close current panel/modal (cancels creation in creation mode).
+
+### 5.2. List Navigation
+
+-   **`Alt + Up` / `Alt + Down`:** Navigate through the item list.
+
+**Navigation Behavior:**
+
+-   **From Search Bar:**
+    - `Alt + Up`: Selects the **last** item in the list
+    - `Alt + Down`: Selects the **first** item in the list
+
+-   **Within List (Wrap-Around Navigation):**
+    - `Alt + Down` from the **last** item: Wraps to the **first** item
+    - `Alt + Up` from the **first** item: Wraps to the **last** item
+
+-   **Navigation Order:** Items are navigated in the order they are displayed on screen (grouped by matrix quadrants: Burning → Today → Other → Ideas), not by item ID.
+
+-   **Focus Behavior:** When navigating from the search bar, the focus automatically moves to the Title field in the Detail Panel after opening an item.
+
+**Visual Feedback:**
+
+-   Selected items are highlighted with a 4px left border accent in the primary color and a subtle background tint
+-   The Detail Panel opens automatically when navigating to an item
+-   Selection persists until the Detail Panel is closed or another item is selected

@@ -33,7 +33,7 @@ class GhostBar {
       // Switch back to capture mode
       this.isSearching = false;
       this.searchQuery = '';
-      this.input.placeholder = 'Search or capture (Ctrl+Enter)...';
+      this.input.placeholder = 'Search or capture (Alt+Enter)...';
       this.clearBtn.classList.remove('visible');
 
       // Trigger search clear
@@ -58,8 +58,8 @@ class GhostBar {
   }
 
   handleKeydown(e) {
-    // Cmd/Ctrl + Enter to create task or save
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    // Alt + Enter to create task or save
+    if (e.altKey && e.key === 'Enter') {
       e.preventDefault();
       e.stopPropagation(); // Prevent event from bubbling to detail panel
 
@@ -69,6 +69,14 @@ class GhostBar {
       } else if (!this.isSearching) {
         // Create task from input
         this.createTask();
+      }
+    }
+
+    // Esc to clear search
+    if (e.key === 'Escape') {
+      if (this.isSearching || this.input.value.trim() !== '') {
+        e.preventDefault();
+        this.clear();
       }
     }
   }
@@ -88,7 +96,7 @@ class GhostBar {
     this.input.value = '';
     this.isSearching = false;
     this.searchQuery = '';
-    this.input.placeholder = 'Search or capture (Ctrl+Enter)...';
+    this.input.placeholder = 'Search or capture (Alt+Enter)...';
     this.clearBtn.classList.remove('visible');
 
     // Focus input
