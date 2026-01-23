@@ -15,6 +15,21 @@ class GhostBar {
     this.init();
   }
 
+  /**
+   * Detect if running on macOS
+   */
+  isMac() {
+    return /Mac|iPhone|iPad|iPod/.test(navigator.platform);
+  }
+
+  /**
+   * Get the modifier key for the current platform
+   * Returns 'Ctrl+Shift' for Mac, 'Alt' for Windows/Linux
+   */
+  getModifierKey() {
+    return this.isMac() ? 'Ctrl+Shift' : 'Alt';
+  }
+
   init() {
     // Event listeners
     this.input.addEventListener('input', this.handleInput.bind(this));
@@ -22,18 +37,22 @@ class GhostBar {
     this.typeToggle.addEventListener('click', this.toggleType.bind(this));
     this.clearBtn.addEventListener('click', this.clear.bind(this));
 
+    // Set initial placeholder based on platform
+    this.input.placeholder = `Search or capture (${this.getModifierKey()}+Enter)...`;
+
     // Focus input on load
     this.input.focus();
   }
 
   handleInput(e) {
     const value = e.target.value.trim();
+    const mod = this.getModifierKey();
 
     if (value === '' && this.isSearching) {
       // Switch back to capture mode
       this.isSearching = false;
       this.searchQuery = '';
-      this.input.placeholder = 'Search or capture (Alt+Enter)...';
+      this.input.placeholder = `Search or capture (${mod}+Enter)...`;
       this.clearBtn.classList.remove('visible');
 
       // Trigger search clear
@@ -58,8 +77,10 @@ class GhostBar {
   }
 
   handleKeydown(e) {
-    // Alt + Enter to create task or save
-    if (e.altKey && e.key === 'Enter') {
+    const modKey = this.isMac() ? (e.ctrlKey && e.shiftKey) : e.altKey;
+
+    // Modifier + Enter to create task or save
+    if (modKey && e.key === 'Enter') {
       e.preventDefault();
       e.stopPropagation(); // Prevent event from bubbling to detail panel
 
@@ -96,7 +117,7 @@ class GhostBar {
     this.input.value = '';
     this.isSearching = false;
     this.searchQuery = '';
-    this.input.placeholder = 'Search or capture (Alt+Enter)...';
+    this.input.placeholder = `Search or capture (${this.getModifierKey()}+Enter)...`;
     this.clearBtn.classList.remove('visible');
 
     // Focus input

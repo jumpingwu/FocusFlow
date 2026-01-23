@@ -8,41 +8,58 @@ class Shortcuts {
     this.init();
   }
 
+  /**
+   * Detect if running on macOS
+   */
+  isMac() {
+    return /Mac|iPhone|iPad|iPod/.test(navigator.platform);
+  }
+
+  /**
+   * Get the modifier key for the current platform
+   * Returns 'Ctrl+Shift' for Mac, 'Alt' for Windows/Linux
+   */
+  getModifierKey() {
+    return this.isMac() ? 'Ctrl+Shift' : 'Alt';
+  }
+
   init() {
+    const mod = this.getModifierKey();
+
     // Register default shortcuts
-    this.register('Alt+F', () => {
+    this.register(`${mod}+F`, () => {
       if (window.ghostBar) {
         window.ghostBar.focus();
       }
     });
 
-    this.register('Alt+N', () => {
+    this.register(`${mod}+N`, () => {
       if (window.ghostBar) {
         window.ghostBar.focus();
       }
     });
 
-    this.register('Alt+Enter', () => {
+    this.register(`${mod}+Enter`, () => {
       // Handled by ghost-bar and detail-panel
     });
 
-    this.register('Alt+1', () => {
+    this.register(`${mod}+1`, () => {
       this.setQuickStatus('Todo');
     });
 
-    this.register('Alt+2', () => {
+    this.register(`${mod}+2`, () => {
       this.setQuickStatus('In-progress');
     });
 
-    this.register('Alt+3', () => {
+    this.register(`${mod}+3`, () => {
       this.setQuickStatus('Pending');
     });
 
-    this.register('Alt+4', () => {
+    this.register(`${mod}+4`, () => {
       this.setQuickStatus('Completed');
     });
 
-    this.register('Alt+5', () => {
+    this.register(`${mod}+5`, () => {
       this.setQuickStatus('Cancelled');
     });
 
@@ -50,13 +67,13 @@ class Shortcuts {
       // Handled by detail-panel and modal
     });
 
-    this.register('Alt+ArrowUp', () => {
+    this.register(`${mod}+ArrowUp`, () => {
       if (window.taskList) {
         window.taskList.navigateUp();
       }
     });
 
-    this.register('Alt+ArrowDown', () => {
+    this.register(`${mod}+ArrowDown`, () => {
       if (window.taskList) {
         window.taskList.navigateDown();
       }
@@ -88,7 +105,18 @@ class Shortcuts {
     if (e.altKey) parts.push('Alt');
     if (e.shiftKey) parts.push('Shift');
 
-    parts.push(e.key);
+    // For digit keys, use e.code to handle Shift+digit correctly
+    // e.code returns the physical key position (e.g., "Digit2")
+    // e.key returns the character produced (e.g., "@" for Shift+2)
+    if (e.code && e.code.startsWith('Digit')) {
+      parts.push(e.code.replace('Digit', ''));
+    } else if (e.code && e.code === 'Enter') {
+      parts.push('Enter');
+    } else if (e.code && e.code.startsWith('Arrow')) {
+      parts.push(e.code);
+    } else {
+      parts.push(e.key);
+    }
 
     return parts.join('+').toLowerCase();
   }
