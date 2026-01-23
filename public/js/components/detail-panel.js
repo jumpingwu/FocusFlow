@@ -16,6 +16,10 @@ class DetailPanel {
     this.mode = 'edit'; // 'edit' or 'create'
     this.tempItemData = {}; // Stores temporary data during creation
 
+    // Store rich text editor instances
+    this.notesEditor = null;
+    this.logEditor = null;
+
     this.init();
   }
 
@@ -308,6 +312,7 @@ class DetailPanel {
         <label class="form-label" for="detail-notes">Notes</label>
         <div class="notes-header">
           <button class="btn btn-secondary btn-sm" id="notes-toggle" title="Toggle edit/view" aria-label="Toggle notes view/edit mode">View</button>
+          <button class="btn btn-secondary btn-sm" id="notes-paste-mode" title="Toggle paste mode" aria-label="Toggle paste mode">Plain Text Paste</button>
         </div>
         <div class="notes-content">
           <textarea class="form-textarea" id="detail-notes" rows="8" placeholder="Add notes...">${window.helpers.escapeHtml(item.notes)}</textarea>
@@ -335,6 +340,7 @@ class DetailPanel {
         <label class="form-label" for="detail-log">Progress Update</label>
         <div class="notes-header">
           <button class="btn btn-secondary btn-sm" id="log-toggle" title="Toggle edit/view" aria-label="Toggle progress update view/edit mode">View</button>
+          <button class="btn btn-secondary btn-sm" id="log-paste-mode" title="Toggle paste mode" aria-label="Toggle paste mode">Plain Text Paste</button>
         </div>
         <div class="notes-content">
           <textarea class="form-textarea" id="detail-log" rows="3" placeholder="Add a progress update..."></textarea>
@@ -528,7 +534,18 @@ class DetailPanel {
       
           // Initialize rich text editor for notes (must be done after textarea is created)
           if (window.RichTextEditor) {
-            new window.RichTextEditor('detail-notes');
+            this.notesEditor = new window.RichTextEditor('detail-notes');
+          }
+
+          // Wire up paste mode toggle for notes
+          const notesPasteModeBtn = document.getElementById('notes-paste-mode');
+          if (notesPasteModeBtn && this.notesEditor) {
+            notesPasteModeBtn.addEventListener('click', () => {
+              const currentMode = this.notesEditor.getPasteMode();
+              const newMode = currentMode === 'plain' ? 'rich' : 'plain';
+              this.notesEditor.setPasteMode(newMode);
+              notesPasteModeBtn.textContent = newMode === 'plain' ? 'Plain Text Paste' : 'Rich Text Paste';
+            });
           }
 
           // Progress update toggle (view/edit mode) - only for active items
@@ -567,7 +584,18 @@ class DetailPanel {
 
             // Initialize rich text editor for progress update
             if (window.RichTextEditor) {
-              new window.RichTextEditor('detail-log');
+              this.logEditor = new window.RichTextEditor('detail-log');
+            }
+
+            // Wire up paste mode toggle for progress update
+            const logPasteModeBtn = document.getElementById('log-paste-mode');
+            if (logPasteModeBtn && this.logEditor) {
+              logPasteModeBtn.addEventListener('click', () => {
+                const currentMode = this.logEditor.getPasteMode();
+                const newMode = currentMode === 'plain' ? 'rich' : 'plain';
+                this.logEditor.setPasteMode(newMode);
+                logPasteModeBtn.textContent = newMode === 'plain' ? 'Plain Text Paste' : 'Rich Text Paste';
+              });
             }
           }
 

@@ -166,14 +166,25 @@ function escapeHtml(text) {
  * Convert URLs to clickable links
  */
 function linkify(text) {
-  const urlRegex = /(https?:\/\/[^\s<]+|www\.[^\s<]+|localhost:[^\s<]+)/g;
-  return text.replace(urlRegex, (url) => {
-    let href = url;
-    if (!href.startsWith('http')) {
-      href = 'http://' + href;
+  // Split by markdown links to avoid processing URLs inside them
+  const parts = text.split(/(\[[^\]]*\]\([^)]+\))/g);
+
+  return parts.map(part => {
+    // Skip markdown links (including those with nested brackets in link text)
+    if (part.match(/\[[\s\S]*?\]\([^)]+\)/)) {
+      return part;
     }
-    return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-  });
+
+    // Convert URLs to clickable links
+    const urlRegex = /(https?:\/\/[^\s<]+|www\.[^\s<]+|localhost:[^\s<]+)/g;
+    return part.replace(urlRegex, (url) => {
+      let href = url;
+      if (!href.startsWith('http')) {
+        href = 'http://' + url;
+      }
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+    });
+  }).join('');
 }
 
 /**
@@ -182,41 +193,137 @@ function linkify(text) {
 function parseMarkdown(text) {
   if (!text) return '';
 
-  // Escape HTML first
-  let html = escapeHtml(text);
+  // Step 1: Process tables FIRST (before anything else)
+  const tables = [];
+  text = text.replace(/(\|[^\n]+\|\n\|[-\s:|]+\|\n(?:\|[^\n]+\|\n?)+)/g, (match) => {
+    const lines = match.trim().split('\n');
+    if (lines.length < 3) return match;
 
-  // Code blocks: ```code```
+    // Skip separator row (index 1)
+    const headerCells = lines[0].split('|').filter(c => c.trim());
+    const headerHtml = `<thead><tr>${headerCells.map(c => `<th>${c.trim()}</th>`).join('')}</tr></thead>`;
+
+    const bodyRows = lines.slice(2).map(line => {
+      const cells = line.split('|').filter(c => c.trim());
+      return `<tr>${cells.map(c => `<td>${c.trim()}</td>`).join('')}</tr>`;
+    }).join('');
+
+    const tableHtml = `<table>${headerHtml}<tbody>${bodyRows}</tbody></table>`;
+    const placeholder = `___TABLE_${tables.length}___`;
+    tables.push(tableHtml);
+    return placeholder;
+  });
+
+  let html = text;
+
+  // Step 2: Protect markdown links and images with placeholders
+  // Handle links with nested brackets: match [text](url) where text can contain []
+  html = html.replace(/\[((?:[^\]]|\](?!\()|\[\])*)\]\(([^)]+)\)/g, '___MD_LINK_START___$1___MD_LINK_URL___$2___MD_LINK_END___');
+  html = html.replace(/!\[([^\]]+)\]\(([^)]+)\)/g, '___MD_IMG_START___$1___MD_IMG_URL___$2___MD_IMG_END___');
+
+  // Step 3: Escape HTML (but not our placeholders)
+  html = escapeHtml(html);
+
+  // Step 4: Restore protected elements
+  html = html.replace(/___MD_LINK_START___(.+?)___MD_LINK_URL___(.+?)___MD_LINK_END___/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  html = html.replace(/___MD_IMG_START___(.+?)___MD_IMG_URL___(.+?)___MD_IMG_END___/g, '<img src="$2" alt="$1">');
+  
+  // Restore tables
+  tables.forEach((tableHtml, index) => {
+    html = html.replace(`___TABLE_${index}___`, tableHtml);
+  });
+
+  // Step 5: Process code blocks
   html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
 
-  // Inline code: `text`
+  // Step 6: Process inline code
   html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
 
-  // Headers: #, ##, ###, etc.
-  html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
-  html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
-  html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
-  html = html.replace(/^#### (.*$)/gm, '<h4>$1</h4>');
-  html = html.replace(/^##### (.*$)/gm, '<h5>$1</h5>');
-  html = html.replace(/^###### (.*$)/gm, '<h6>$1</h6>');
+  // Step 7: Process ordered lists (before unordered to avoid conflicts)
+  html = html.replace(/^[\s]*(\d+)\.\s+(.+)$/gm, '<li>$2</li>');
+  // Wrap consecutive ordered list items
+  html = html.replace(/(<li>.*<\/li>)\n(?!<li>)/g, '$1</ol>\n');
+  html = html.replace(/(?<!<\/ol>\n)(<li>)/g, '<ol>$1');
 
-  // Bold: **text**
-  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Step 8: Process lists (both ordered and unordered)
+  const lines = html.split('\n');
+  let result = [];
+  let inUnordered = false;
+  let inOrdered = false;
+  let currentList = [];
+  let listType = null;
 
-  // Italic: *text*
-  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const unorderedMatch = line.match(/^[\s]*[-*]\s+(.+)$/);
+    const orderedMatch = line.match(/^[\s]*(\d+)\.\s+(.+)$/);
 
-  // Links: [text](url)
-  html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    if (unorderedMatch) {
+      if (!inUnordered) {
+        // Close ordered list if open
+        if (inOrdered) {
+          result.push(`<ol>${currentList.join('')}</ol>`);
+          inOrdered = false;
+          currentList = [];
+        }
+        inUnordered = true;
+        listType = 'ul';
+      }
+      currentList.push(`<li>${unorderedMatch[1]}</li>`);
+    } else if (orderedMatch) {
+      if (!inOrdered) {
+        // Close unordered list if open
+        if (inUnordered) {
+          result.push(`<ul>${currentList.join('')}</ul>`);
+          inUnordered = false;
+          currentList = [];
+        }
+        inOrdered = true;
+        listType = 'ol';
+      }
+      currentList.push(`<li>${orderedMatch[2]}</li>`);
+    } else {
+      // Close any open list
+      if (inUnordered) {
+        result.push(`<ul>${currentList.join('')}</ul>`);
+        inUnordered = false;
+        currentList = [];
+      } else if (inOrdered) {
+        result.push(`<ol>${currentList.join('')}</ol>`);
+        inOrdered = false;
+        currentList = [];
+      }
+      result.push(line);
+    }
+  }
 
-  // Images: ![alt](url)
-  html = html.replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1">');
+  // Don't forget the last list
+  if (inUnordered) {
+    result.push(`<ul>${currentList.join('')}</ul>`);
+  } else if (inOrdered) {
+    result.push(`<ol>${currentList.join('')}</ol>`);
+  }
 
-  // Line breaks
+  html = result.join('\n');
+
+  // Step 10: Process headers
+  html = html.replace(/^######\s+(.+)$/gm, '<h6>$1</h6>');
+  html = html.replace(/^#####\s+(.+)$/gm, '<h5>$1</h5>');
+  html = html.replace(/^####\s+(.+)$/gm, '<h4>$1</h4>');
+  html = html.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
+
+  // Step 11: Process bold and italic
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+  // Step 12: Process line breaks (but not inside block elements)
+  // First, add breaks after block elements
+  html = html.replace(/(<\/table>|<\/ul>|<\/ol>|<\/pre>)\n/g, '$1<br><br>');
+  // Then convert remaining newlines
   html = html.replace(/\n\n/g, '<br><br>');
   html = html.replace(/\n/g, '<br>');
-
-  // Auto-link URLs
-  html = linkify(html);
 
   return html;
 }
