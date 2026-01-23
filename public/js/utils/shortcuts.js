@@ -26,16 +26,24 @@ class Shortcuts {
       // Handled by ghost-bar and detail-panel
     });
 
-    this.register('Ctrl+1', () => {
+    this.register('Alt+1', () => {
       this.setQuickStatus('Todo');
     });
 
-    this.register('Ctrl+2', () => {
+    this.register('Alt+2', () => {
       this.setQuickStatus('In-progress');
     });
 
-    this.register('Ctrl+3', () => {
+    this.register('Alt+3', () => {
       this.setQuickStatus('Pending');
+    });
+
+    this.register('Alt+4', () => {
+      this.setQuickStatus('Completed');
+    });
+
+    this.register('Alt+5', () => {
+      this.setQuickStatus('Cancelled');
     });
 
     this.register('Escape', () => {
@@ -55,6 +63,7 @@ class Shortcuts {
 
     if (this.shortcuts.has(key)) {
       const callback = this.shortcuts.get(key);
+      e.preventDefault(); // Prevent browser default behavior
       callback(e);
     }
   }
@@ -69,7 +78,7 @@ class Shortcuts {
 
     parts.push(e.key);
 
-    return parts.join('+');
+    return parts.join('+').toLowerCase();
   }
 
   async setQuickStatus(status) {
