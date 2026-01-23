@@ -4,6 +4,7 @@ node_modules/
 # Data files
 data.json
 data.json.bak
+data_archive.json
 
 # Uploads
 uploads/
