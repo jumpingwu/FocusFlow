@@ -47,7 +47,6 @@ interface Item {
 }
 
 interface ArchivedItem {
-  id: string; // UUID (same as original item)
   item: Item; // Complete snapshot of item at time of archiving
   archivedAt: string; // ISO timestamp of when item was archived
   archivedBy: 'manual' | 'morning_reset'; // How the item was archived

@@ -9,7 +9,7 @@ const { getAllItems, updateLastReviewDate, getLastReviewDate, archiveItem } = re
 router.get('/overdue', (req, res) => {
   try {
     const items = getAllItems();
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('en-CA'); // Use local date (YYYY-MM-DD format)
 
     const overdueItems = items.filter(item => {
       const isNotCompleted = item.status !== 'Completed' && item.status !== 'Cancelled';
@@ -30,7 +30,7 @@ router.get('/overdue', (req, res) => {
 router.get('/status', (req, res) => {
   try {
     const lastReviewDate = getLastReviewDate();
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('en-CA'); // Use local date (YYYY-MM-DD format)
     const needsReview = lastReviewDate !== today;
 
     // Check if there are any overdue items
@@ -58,7 +58,7 @@ router.get('/status', (req, res) => {
  */
 router.post('/complete', (req, res) => {
   try {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('en-CA'); // Use local date (YYYY-MM-DD format)
     const data = updateLastReviewDate(today);
 
     res.json({

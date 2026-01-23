@@ -132,9 +132,7 @@ class DailyReviewModal {
 
         case 'archive':
           // Archive the item
-          await window.api.items.update(item.id, {
-            status: 'Archived'
-          });
+          await window.api.items.archive(item.id, 'manual');
           break;
       }
 
