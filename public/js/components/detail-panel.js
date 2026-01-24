@@ -23,6 +23,13 @@ class DetailPanel {
     this.init();
   }
 
+  /**
+   * Detect if running on macOS
+   */
+  isMac() {
+    return /Mac|iPhone|iPad|iPod/.test(navigator.platform);
+  }
+
   init() {
     // Close button
     this.closeBtn.addEventListener('click', () => {
@@ -103,7 +110,8 @@ class DetailPanel {
         this.close();
         this.closeMenu();
       }
-      if (e.altKey && e.key === 'Enter' && this.panel.classList.contains('open')) {
+      const modKey = this.isMac() ? (e.ctrlKey && e.shiftKey) : e.altKey;
+      if (modKey && e.key === 'Enter' && this.panel.classList.contains('open')) {
         // Don't save if item is archived
         if (this.currentItem && (this.currentItem.archivedAt || this.currentItem.archivedBy)) {
           return;

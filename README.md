@@ -88,6 +88,14 @@ todo_list_2/
 
 ## Keyboard Shortcuts
 
+### macOS
+- `Ctrl + Shift + F/N` - Focus the Ghost Bar (Search/Capture)
+- `Ctrl + Shift + Enter` - Create new task or Save and Close Detail Panel
+- `Ctrl + Shift + Up/Down` - Navigate through item list (when search bar focused or item selected)
+- `Ctrl + Shift + 1/2/3/4/5` - Set Status (Todo / In-progress / Pending / Completed / Cancelled) - only when Detail Panel is open
+- `Esc` - Clear search or Close current panel/modal
+
+### Windows / Linux
 - `Alt + F/N` - Focus the Ghost Bar (Search/Capture)
 - `Alt + Enter` - Create new task or Save and Close Detail Panel
 - `Alt + Up/Down` - Navigate through item list (when search bar focused or item selected)
