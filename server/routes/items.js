@@ -42,17 +42,27 @@ router.get('/', (req, res) => {
       });
     }
 
-    // Search in title, category, notes, and manual logs
+    // Filter by tag
+    if (req.query.tag !== undefined && req.query.tag !== null) {
+      filteredItems = filteredItems.filter(item => {
+        return item.tags && item.tags.includes(req.query.tag);
+      });
+    }
+
+    // Search in title, category, notes, tags, and manual logs
     if (search) {
       const searchLower = search.toLowerCase();
       filteredItems = filteredItems.filter(item => {
         const titleMatch = item.title.toLowerCase().includes(searchLower);
         const categoryMatch = item.category.toLowerCase().includes(searchLower);
         const notesMatch = item.notes.toLowerCase().includes(searchLower);
+        const tagMatch = item.tags && item.tags.some(tag =>
+          tag.toLowerCase().includes(searchLower)
+        );
         const logMatch = item.logs.some(log =>
           log.type === 'manual' && log.msg.toLowerCase().includes(searchLower)
         );
-        return titleMatch || categoryMatch || notesMatch || logMatch;
+        return titleMatch || categoryMatch || notesMatch || tagMatch || logMatch;
       });
 
       // Also search in archived items
@@ -61,10 +71,13 @@ router.get('/', (req, res) => {
         const titleMatch = item.item.title.toLowerCase().includes(searchLower);
         const categoryMatch = item.item.category.toLowerCase().includes(searchLower);
         const notesMatch = item.item.notes.toLowerCase().includes(searchLower);
+        const tagMatch = item.item.tags && item.item.tags.some(tag =>
+          tag.toLowerCase().includes(searchLower)
+        );
         const logMatch = item.item.logs.some(log =>
           log.type === 'manual' && log.msg.toLowerCase().includes(searchLower)
         );
-        return titleMatch || categoryMatch || notesMatch || logMatch;
+        return titleMatch || categoryMatch || notesMatch || tagMatch || logMatch;
       });
 
       // Add archived items to results (with archive metadata)

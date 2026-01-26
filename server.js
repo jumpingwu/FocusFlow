@@ -30,6 +30,7 @@ if (!fs.existsSync(uploadsDir)) {
 app.use('/api/items', require('./server/routes/items'));
 app.use('/api/upload', require('./server/routes/upload'));
 app.use('/api/categories', require('./server/routes/categories'));
+app.use('/api/tags', require('./server/routes/tags'));
 app.use('/api/review', require('./server/routes/review'));
 
 // Serve uploaded files

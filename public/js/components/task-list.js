@@ -8,6 +8,7 @@ class TaskList {
     this.displayedItems = []; // Items in the order they're displayed
     this.currentFilter = 'inbox';
     this.currentCategory = null;
+    this.currentTag = null;
     this.searchQuery = '';
     this.selectedItemId = null;
 
@@ -22,6 +23,7 @@ class TaskList {
     document.addEventListener('sidebar:filterchange', (e) => {
       this.currentFilter = e.detail.filter;
       this.currentCategory = e.detail.category;
+      this.currentTag = e.detail.tag || null;
       this.loadItems(); // Fetch filtered items instead of just rendering
     });
 
@@ -61,10 +63,13 @@ class TaskList {
             const titleMatch = item.item.title.toLowerCase().includes(searchLower);
             const categoryMatch = item.item.category.toLowerCase().includes(searchLower);
             const notesMatch = item.item.notes.toLowerCase().includes(searchLower);
+            const tagMatch = item.item.tags && item.item.tags.some(tag =>
+              tag.toLowerCase().includes(searchLower)
+            );
             const logMatch = item.item.logs.some(log =>
               log.type === 'manual' && log.msg.toLowerCase().includes(searchLower)
             );
-            return titleMatch || categoryMatch || notesMatch || logMatch;
+            return titleMatch || categoryMatch || notesMatch || tagMatch || logMatch;
           });
         }
 
@@ -78,6 +83,11 @@ class TaskList {
       // Apply category filter (including empty string for "No Category")
       if (this.currentCategory !== undefined && this.currentCategory !== null) {
         filters.category = this.currentCategory;
+      }
+
+      // Apply tag filter
+      if (this.currentTag !== undefined && this.currentTag !== null) {
+        filters.tag = this.currentTag;
       }
 
       // Apply search filter
@@ -262,6 +272,16 @@ class TaskList {
       category.className = 'task-category';
       category.textContent = item.category;
       meta.appendChild(category);
+    }
+
+    // Tags
+    if (item.tags && item.tags.length > 0) {
+      item.tags.forEach(tag => {
+        const tagEl = document.createElement('span');
+        tagEl.className = 'task-tag';
+        tagEl.textContent = tag;
+        meta.appendChild(tagEl);
+      });
     }
 
     content.appendChild(meta);

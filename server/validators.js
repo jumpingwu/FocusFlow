@@ -53,6 +53,16 @@ function validateItem(item) {
     errors.push('Item must have an attachments array');
   }
 
+  if (!Array.isArray(item.tags)) {
+    errors.push('Item must have a tags array');
+  } else {
+    item.tags.forEach((tag, index) => {
+      if (typeof tag !== 'string' || tag.trim().length === 0) {
+        errors.push(`Tag at index ${index} must be a non-empty string`);
+      }
+    });
+  }
+
   return {
     valid: errors.length === 0,
     errors
@@ -118,7 +128,8 @@ function sanitizeItem(item) {
     targetDate: isValidDate(item.targetDate) ? item.targetDate : '',
     createdAt: isValidDateTime(item.createdAt) ? item.createdAt : new Date().toISOString(),
     attachments: Array.isArray(item.attachments) ? item.attachments : [],
-    logs: Array.isArray(item.logs) ? item.logs : []
+    logs: Array.isArray(item.logs) ? item.logs : [],
+    tags: Array.isArray(item.tags) ? item.tags.filter(t => typeof t === 'string' && t.trim().length > 0) : []
   };
 
   // For Ideas, set priority/urgency/targetDate to Undefined

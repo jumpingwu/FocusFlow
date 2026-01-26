@@ -263,6 +263,15 @@ class DetailPanel {
     `;
     this.bodyEl.appendChild(categoryGroup);
 
+    // Tags input (multi-select)
+    const tagsGroup = document.createElement('div');
+    tagsGroup.className = 'form-group';
+    tagsGroup.innerHTML = `
+      <label class="form-label" for="detail-tags-input">Tags</label>
+      <input type="text" class="form-input" id="detail-tags-input" placeholder="Add tags..." ${isArchived ? 'disabled' : ''}>
+    `;
+    this.bodyEl.appendChild(tagsGroup);
+
     // Status selector
     const statusGroup = document.createElement('div');
     statusGroup.className = 'form-group';
@@ -451,29 +460,45 @@ class DetailPanel {
       });
   
       // Category input - initialize creatable select
-      const categoryInput = document.getElementById('detail-category-input');
-      if (categoryInput) {
-        // Load categories and initialize creatable select
-        window.api.categories.getAll().then(categories => {
-          if (window.CreatableSelect) {
-            this.categorySelect = new window.CreatableSelect('detail-category-input', categories);
-            categoryInput.addEventListener('input', () => {
-              this.isDirty = true;
+            const categoryInput = document.getElementById('detail-category-input');
+            if (categoryInput) {
+              // Load categories and initialize creatable select
+              window.api.categories.getAll().then(categories => {
+                if (window.CreatableSelect) {
+                  this.categorySelect = new window.CreatableSelect('detail-category-input', categories);
+                  categoryInput.addEventListener('input', () => {
+                    this.isDirty = true;
+                  });
+                }
+              }).catch(error => {
+                console.error('Error loading categories:', error);
+              });
+            }
+      
+            // Tags input - initialize multi-select
+            const tagsInput = document.getElementById('detail-tags-input');
+            if (tagsInput && !isArchived) {
+              window.api.tags.getAll().then(tags => {
+                if (window.MultiSelect) {
+                  this.tagsSelect = new window.MultiSelect('detail-tags-input', tags.map(t => t.name));
+                  this.tagsSelect.setValues(this.currentItem.tags || []);
+                  tagsInput.addEventListener('input', () => {
+                    this.isDirty = true;
+                  });
+                }
+              }).catch(error => {
+                console.error('Error loading tags:', error);
+              });
+            }
+      
+            // Status pills
+            const statusPills = document.querySelectorAll('#status-selector .status-pill');
+            statusPills.forEach(pill => {
+              pill.addEventListener('click', () => {
+                const newStatus = pill.dataset.status;
+                this.handleStatusChange(newStatus);
+              });
             });
-          }
-        }).catch(error => {
-          console.error('Error loading categories:', error);
-        });
-      }
-  
-      // Status pills
-      const statusPills = document.querySelectorAll('#status-selector .status-pill');
-      statusPills.forEach(pill => {
-        pill.addEventListener('click', () => {
-          const newStatus = pill.dataset.status;
-          this.handleStatusChange(newStatus);
-        });
-      });
   
       // Priority and urgency selects
       const prioritySelect = document.getElementById('detail-priority');
@@ -771,6 +796,7 @@ class DetailPanel {
         type: this.currentItem.type,
         title: document.getElementById('detail-title-input').value.trim(),
         category: this.categorySelect ? this.categorySelect.getValue() : document.getElementById('detail-category-input').value.trim(),
+        tags: this.tagsSelect ? this.tagsSelect.getValues() : (this.currentItem.tags || []),
         status: document.querySelector('#status-selector .status-pill.active').dataset.status,
         notes: document.getElementById('detail-notes').value,
       };

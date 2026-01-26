@@ -20,3 +20,4 @@ npm-debug.log*
 # Environment
 .env
 .env.local
+data.json.migration.bak

@@ -491,6 +491,23 @@ function countByCategory(items) {
   return counts;
 }
 
+/**
+ * Count items by tag
+ */
+function countByTag(items) {
+  const counts = {};
+
+  items.forEach(item => {
+    if (item.tags && Array.isArray(item.tags)) {
+      item.tags.forEach(tag => {
+        counts[tag] = (counts[tag] || 0) + 1;
+      });
+    }
+  });
+
+  return counts;
+}
+
 // Export helpers
 window.helpers = {
   formatDate,
@@ -515,4 +532,5 @@ window.helpers = {
   groupItemsByMatrix,
   countByStatus,
   countByCategory,
+  countByTag,
 };

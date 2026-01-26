@@ -166,20 +166,88 @@ const uploadApi = {
 };
 
 /**
+
  * Categories API
+
  */
+
 const categoriesApi = {
+
   /**
+
    * Get all categories
+
    */
+
   getAll() {
+
     return apiRequest('/categories');
+
   },
+
 };
 
+
+
 /**
- * Review API
+
+ * Tags API
+
  */
+
+const tagsApi = {
+
+  /**
+
+   * Get all tags with usage counts
+
+   */
+
+  getAll() {
+
+    return apiRequest('/tags');
+
+  },
+
+
+
+  /**
+
+   * Get unused tags
+
+   */
+
+  getUnused() {
+
+    return apiRequest('/tags/unused');
+
+  },
+
+
+
+  /**
+
+   * Delete unused tags
+
+   */
+
+  deleteUnused() {
+
+    return apiRequest('/tags/unused', {
+
+      method: 'DELETE',
+
+    });
+
+  },
+
+};
+
+
+
+/**
+
+ * Review API */
 const reviewApi = {
   /**
    * Get overdue items
@@ -226,6 +294,7 @@ window.api = {
   items: itemsApi,
   upload: uploadApi,
   categories: categoriesApi,
+  tags: tagsApi,
   review: reviewApi,
   health: healthCheck,
 };

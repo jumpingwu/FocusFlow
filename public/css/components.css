@@ -257,6 +257,47 @@
   margin: var(--spacing-xs) 0;
 }
 
+/* Tag Items */
+.tag-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  background-color: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+  width: 100%;
+}
+
+.tag-item:hover {
+  background-color: var(--color-canvas);
+  color: var(--color-text-primary);
+}
+
+.tag-item.active {
+  background-color: var(--color-canvas);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.tag-count {
+  margin-left: auto;
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+}
+
+.tags-empty {
+  padding: var(--spacing-sm);
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
 /* Ghost Bar Controls */
 .ghost-toggle {
   padding: var(--spacing-sm) var(--spacing-md);
@@ -723,6 +764,129 @@
   color: var(--color-text-muted);
   font-size: var(--font-size-small);
   font-style: italic;
+}
+
+/* Multi Select */
+.multi-select-container {
+  position: relative;
+}
+
+.multi-select-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+}
+
+.multi-select-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 2px var(--spacing-sm);
+  background-color: var(--color-canvas);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.multi-select-pill-remove {
+  background: none;
+  border: none;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.multi-select-pill-remove:hover {
+  color: var(--color-overdue);
+  background-color: rgba(127, 29, 29, 0.1);
+}
+
+.multi-select-input {
+  flex: 1;
+  min-width: 120px;
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-body);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.multi-select-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(87, 83, 78, 0.1);
+}
+
+.multi-select-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: var(--z-dropdown);
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-top: var(--spacing-xs);
+  box-shadow: var(--shadow-lg);
+  display: none;
+}
+
+.multi-select-dropdown.open {
+  display: block;
+}
+
+.multi-select-option {
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
+}
+
+.multi-select-option:hover,
+.multi-select-option.highlighted {
+  background-color: var(--color-canvas);
+}
+
+.multi-select-empty {
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+  font-style: italic;
+}
+
+/* Task Tags */
+.task-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--spacing-sm);
+  background-color: var(--color-canvas);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-right: var(--spacing-xs);
+}
+
+.task-tag:hover {
+  background-color: var(--color-bg-hover);
 }
 
 /* Notes Header */

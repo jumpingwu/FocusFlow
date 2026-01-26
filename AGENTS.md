@@ -27,6 +27,7 @@ FocusFlow 是一个基于 Node.js 的个人生产力系统，专注于快速捕�
 │       ├── items.js       # 项目 CRUD、归档、过滤
 │       ├── upload.js      # 文件上传处理
 │       ├── categories.js  # 分类 CRUD
+│       ├── tags.js        # 标签管理
 │       └── review.js      # 每日回顾端点
 ├── public/                # 前端资源
 │   ├── index.html         # 主页面
@@ -62,11 +63,24 @@ npm run dev
 
 ### 数据文件
 
-- `data.json`: 主数据文件，存储所有活跃项目和分类
+- `data.json`: 主数据文件，存储所有活跃项目、分类和标签
 - `data_archive.json`: 归档数据，存储已归档的项目
 - `uploads/`: 文件上传目录，存储图片和附件
 
 **重要**: 这些文件应在 `.gitignore` 中排除，避免将用户数据提交到仓库。
+
+### 数据结构
+
+`data.json` 包含以下主要部分：
+
+```javascript
+{
+  items: [],           // 活跃项目数组
+  categories: [],      // 分类数组
+  tags: [],            // 标签数组（全局标签池）
+  lastReviewDate: null // 最后回顾日期
+}
+```
 
 ## 数据模型
 
@@ -85,6 +99,7 @@ npm run dev
   targetDate: string,            // YYYY-MM-DD 格式
   createdAt: string,             // ISO 时间戳
   attachments: string[],         // 上传文件路径数组
+  tags: string[],                // 标签数组
   logs: LogEntry[]               // 审计日志
 }
 ```
@@ -133,6 +148,12 @@ npm run dev
 - `GET /api/categories` - 获取所有分类
 - `POST /api/categories` - 创建新分类
 
+### 标签管理
+
+- `GET /api/tags` - 获取所有标签及其使用次数（按使用频率排序）
+- `GET /api/tags/unused` - 获取未使用的标签
+- `DELETE /api/tags/unused` - 删除所有未使用的标签
+
 ### 文件上传
 
 - `POST /api/upload` - 上传文件
@@ -141,6 +162,10 @@ npm run dev
 
 - `GET /api/review/overdue` - 获取逾期项目
 - `POST /api/review/complete` - 完成每日回顾
+
+### 健康检查
+
+- `GET /api/health` - 健康检查端点，返回服务器状态和时间戳
 
 ## 前端组件架构
 
@@ -155,6 +180,7 @@ npm run dev
 - **DailyReviewModal** (`daily-review-modal.js`): 每日回顾模态框
 - **Sidebar** (`sidebar.js`): 分类侧边栏
 - **CreatableSelect** (`creatable-select.js`): 可创建的选择框
+- **MultiSelect** (`multi-select.js`): 多选下拉组件，用于标签选择
 
 ### 工具模块
 
@@ -177,9 +203,19 @@ npm run dev
 
 所有数据变更必须记录审计日志：
 
-- 字段变更（Status、Priority、Urgency、TargetDate）自动生成系统日志
+- 字段变更（Status、Priority、Urgency、TargetDate、Tags）自动生成系统日志
 - Notes 字段变更时，`previousValue` 必须包含完整的旧值
+- Tags 字段变更时，记录添加和删除的标签（格式：`Tags changed: +tag1, +tag2, -tag3`）
 - 手动日志通过 `addManualLog()` 添加
+
+### 标签管理
+
+- 标签存储在 `data.json` 的 `tags` 数组中
+- 创建新项目时，新标签自动添加到全局标签列表
+- 更新项目时，新标签自动添加到全局标签列表
+- 支持获取未使用的标签（使用次数为 0）
+- 支持批量删除未使用的标签
+- 标签使用次数通过遍历所有项目动态计算
 
 ### 键盘快捷键
 
@@ -225,9 +261,10 @@ Notes 和 Progress Update 字段支持 Markdown：
 
 ### 过滤和搜索
 
-- **全局搜索**: 匹配 Title、Category、Notes 和手动日志内容
+- **全局搜索**: 匹配 Title、Category、Notes、Tags 和手动日志内容
 - **逾期过滤**: `status != Completed/Cancelled` AND `targetDate < Today`
 - **今日过滤**: `targetDate == today` OR `urgency == 'Today'` OR `urgency == 'Burning'`
+- **标签过滤**: 支持按标签筛选项目
 - **矩阵分组**: 始终按四个象限分组（Burning & Critical、Today & High、Other Tasks、Ideas）
 
 ## 重要注意事项
@@ -237,7 +274,29 @@ Notes 和 Progress Update 字段支持 Markdown：
 3. **文件上传**: 支持拖放和粘贴，图片自动保存到 `/uploads`
 4. **每日回顾**: 每天首次启动时，如果有逾期项目会显示回顾模态框
 5. **动态分类**: 创建新分类时立即更新全局状态，无需刷新页面
-6. **Markdown 渲染**: 支持 Markdown 到 HTML 的转换，用于富文本显示
+6. **动态标签**: 创建新标签时立即更新全局状态，无需刷新页面
+7. **标签使用统计**: 标签使用次数通过遍历所有项目动态计算，实时反映当前状态
+8. **Markdown 渲染**: 支持 Markdown 到 HTML 的转换，用于富文本显示
+
+## 安全配置
+
+### Content Security Policy (CSP)
+
+应用配置了 CSP 策略以增强安全性，同时支持开发需求：
+
+```
+default-src 'self';
+script-src 'self' 'unsafe-inline' 'unsafe-eval';
+style-src 'self' 'unsafe-inline';
+img-src 'self' data: blob: https:;
+font-src 'self' data:;
+connect-src 'self' http://localhost:* ws://localhost:* https:;
+```
+
+**说明**：
+- `unsafe-inline` 和 `unsafe-eval` 允许内联脚本和 eval()，用于支持动态 JavaScript 功能
+- `data:` 和 `blob:` 允许从 Data URL 和 Blob 加载图片（用于粘贴和拖放功能）
+- `http://localhost:*` 和 `ws://localhost:*` 允许本地开发时的 WebSocket 连接
 
 ## 常见任务
 
@@ -247,6 +306,13 @@ Notes 和 Progress Update 字段支持 Markdown：
 2. 在 `server/data-manager.js` 中实现数据操作
 3. 在 `public/js/components/` 中创建或更新前端组件
 4. 更新相关样式文件
+
+### 管理标签
+
+1. **获取所有标签**: 调用 `GET /api/tags` 获取标签列表及使用次数
+2. **清理未使用标签**: 调用 `DELETE /api/tags/unused` 删除未使用的标签
+3. **在前端使用 MultiSelect**: 使用 `new MultiSelect(inputId, options)` 初始化多选组件
+4. **处理标签变更**: 监听 MultiSelect 的 input 事件获取选中的标签值
 
 ### 修改数据模型
 
@@ -269,3 +335,8 @@ Notes 和 Progress Update 字段支持 Markdown：
 - 测试文件上传和附件功能
 - 验证归档和恢复功能
 - 测试键盘快捷键
+- 测试标签功能：
+  - 创建和删除标签
+  - 标签使用次数统计
+  - 未使用标签的清理
+  - MultiSelect 组件的交互（键盘导航、创建新标签、删除标签等）

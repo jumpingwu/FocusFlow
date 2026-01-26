@@ -12,13 +12,18 @@ const ARCHIVE_FILE = path.join(__dirname, '..', 'data_archive.json');
 function readData() {
   try {
     if (!fs.existsSync(DATA_FILE)) {
-      return { items: [], categories: [], lastReviewDate: null };
+      return { items: [], categories: [], tags: [], lastReviewDate: null };
     }
     const data = fs.readFileSync(DATA_FILE, 'utf8');
-    return JSON.parse(data);
+    const parsed = JSON.parse(data);
+    // Ensure tags array exists
+    if (!parsed.tags) {
+      parsed.tags = [];
+    }
+    return parsed;
   } catch (error) {
     console.error('Error reading data.json:', error);
-    return { items: [], categories: [], lastReviewDate: null };
+    return { items: [], categories: [], tags: [], lastReviewDate: null };
   }
 }
 
@@ -81,6 +86,15 @@ function createItem(itemData) {
     data.categories.push(item.category);
   }
 
+  // Add tags if new
+  if (item.tags && Array.isArray(item.tags)) {
+    item.tags.forEach(tag => {
+      if (tag && !data.tags.includes(tag)) {
+        data.tags.push(tag);
+      }
+    });
+  }
+
   data.items.push(item);
   writeData(data);
 
@@ -135,6 +149,25 @@ function updateItem(id, updates) {
     changes.push(`Target date changed from ${oldDate} to ${newDate}`);
   }
 
+  // Check for tag changes
+  if (updates.tags !== undefined) {
+    const oldTags = oldItem.tags || [];
+    const newTags = updates.tags || [];
+    const addedTags = newTags.filter(tag => !oldTags.includes(tag));
+    const removedTags = oldTags.filter(tag => !newTags.includes(tag));
+
+    if (addedTags.length > 0 || removedTags.length > 0) {
+      const changeParts = [];
+      if (addedTags.length > 0) {
+        changeParts.push(`+${addedTags.join(', +')}`);
+      }
+      if (removedTags.length > 0) {
+        changeParts.push(`-${removedTags.join(', -')}`);
+      }
+      changes.push(`Tags changed: ${changeParts.join(', ')}`);
+    }
+  }
+
   if (updates.notes !== undefined && updates.notes !== oldItem.notes) {
     logs.push({
       timestamp: new Date().toISOString(),
@@ -166,6 +199,15 @@ function updateItem(id, updates) {
   // Add new category if needed
   if (updatedItem.category && !data.categories.includes(updatedItem.category)) {
     data.categories.push(updatedItem.category);
+  }
+
+  // Add new tags if needed
+  if (updatedItem.tags && Array.isArray(updatedItem.tags)) {
+    updatedItem.tags.forEach(tag => {
+      if (tag && !data.tags.includes(tag)) {
+        data.tags.push(tag);
+      }
+    });
   }
 
   writeData(data);
@@ -372,6 +414,54 @@ function getArchivedItems() {
   return archiveData.archivedItems;
 }
 
+/**
+ * Get all tags
+ */
+function getAllTags() {
+  const data = readData();
+  return data.tags || [];
+}
+
+/**
+ * Get unused tags (tags with zero usage count)
+ */
+function getUnusedTags() {
+  const data = readData();
+  const allTags = data.tags || [];
+  const items = data.items || [];
+
+  // Calculate tag usage counts
+  const tagUsage = {};
+  items.forEach(item => {
+    if (item.tags && Array.isArray(item.tags)) {
+      item.tags.forEach(tag => {
+        tagUsage[tag] = (tagUsage[tag] || 0) + 1;
+      });
+    }
+  });
+
+  // Return tags with zero usage
+  return allTags.filter(tag => !tagUsage[tag] || tagUsage[tag] === 0);
+}
+
+/**
+ * Delete unused tags
+ */
+function deleteUnusedTags() {
+  const data = readData();
+  const unusedTags = getUnusedTags();
+
+  if (unusedTags.length === 0) {
+    return { deleted: 0, tags: [] };
+  }
+
+  // Remove unused tags from data.tags
+  data.tags = data.tags.filter(tag => !unusedTags.includes(tag));
+  writeData(data);
+
+  return { deleted: unusedTags.length, tags: unusedTags };
+}
+
 module.exports = {
   readData,
   writeData,
@@ -389,5 +479,8 @@ module.exports = {
   archiveItem,
   restoreItem,
   permanentDeleteArchivedItem,
-  getArchivedItems
+  getArchivedItems,
+  getAllTags,
+  getUnusedTags,
+  deleteUnusedTags
 };
