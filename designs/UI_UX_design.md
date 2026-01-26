@@ -108,7 +108,9 @@ Based on the "Zen Writer" aesthetic, the interface prioritizes whitespace, typog
     -   **Clear Selection:** Selection is cleared when the detail panel is closed
     
 
-### 3.3. Contextual Detail Panel (Pane 3 - 420px)
+### 3.3. Contextual Detail Panel (Pane 3 - Fluid Width)
+
+-   **Fluid Width:** Adapts to viewport size using `clamp(420px, 40vw, 900px)` - 40% of viewport width, minimum 420px, maximum 900px. Provides better utilization of screen space on larger displays.
 
 -   **Slide-out Transition:** A `cubic-bezier(0.4, 0, 0.2, 1)` slide from the right.
     
@@ -132,6 +134,20 @@ Based on the "Zen Writer" aesthetic, the interface prioritizes whitespace, typog
         
 -   **Attachments Gallery:** Files appear as "File Cards" with small icons (PDF, IMG, DOC) and a download/remove action.
     
+
+### 3.4. Unified Header Design
+
+All three pane headers (Sidebar Header, Ghost Bar, Detail Panel Header) form a cohesive visual unit across the top of the application:
+
+-   **Consistent Height:** All headers are 88px tall for perfect visual alignment
+-   **Unified Appearance:** No vertical separators between headers - they appear as one continuous header bar
+-   **Consistent Background:** All headers use the same background color (`--color-panel`)
+-   **Subtle Depth:** Shared bottom border with soft shadow (`box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04)`) creates a modern, professional "app header" feel
+-   **Visual Continuity:** Creates a seamless experience across the entire width of the application
+-   **Panels Below:** The content panes below maintain their distinct background colors (white for sidebar/detail, gray for task list) for visual hierarchy and separation from the header
+-   **Responsive Design:** The unified header adapts gracefully to different screen sizes while maintaining its cohesive appearance
+
+This design follows modern application patterns seen in world-class tools like Notion, Linear, and other contemporary productivity applications, providing a polished and professional user experience.
 
 ## 4\. Specific Interaction Requirements
 

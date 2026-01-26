@@ -43,7 +43,6 @@ body {
 .pane-left {
   width: var(--pane-left-width);
   min-width: var(--pane-left-width);
-  border-right: 1px solid var(--color-border);
   background-color: var(--color-panel);
 }
 
@@ -54,9 +53,8 @@ body {
 }
 
 .pane-right {
-  width: var(--pane-right-width);
-  min-width: var(--pane-right-width);
-  border-left: 1px solid var(--color-border);
+  width: clamp(420px, 40vw, 900px);
+  max-width: 50vw;
   background-color: var(--color-panel);
   transform: translateX(100%);
   position: absolute;
@@ -74,8 +72,10 @@ body {
 
 /* Sidebar */
 .sidebar-header {
+  height: 88px;
   padding: var(--spacing-lg);
   border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .app-title {
@@ -132,20 +132,14 @@ body {
   position: sticky;
   top: 0;
   z-index: 5;
+  height: 88px;
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  padding: var(--spacing-md);
-  background-color: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(30px);
+  padding: var(--spacing-lg);
+  background-color: var(--color-panel);
   border-bottom: 1px solid var(--color-border);
-}
-
-/* Dark theme support for ghost bar */
-@media (prefers-color-scheme: dark) {
-  .ghost-bar {
-    background-color: rgba(44, 44, 46, 0.95);
-  }
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .ghost-input-wrapper {
@@ -193,11 +187,13 @@ body {
 }
 
 .detail-header {
+  height: 88px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: var(--spacing-lg);
   border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .detail-title {
