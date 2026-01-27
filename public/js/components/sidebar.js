@@ -39,6 +39,14 @@ class Sidebar {
       });
     });
 
+    // Setup cleanup button (add listener only once)
+    const cleanupBtn = document.getElementById('cleanup-tags-btn');
+    if (cleanupBtn) {
+      cleanupBtn.addEventListener('click', () => {
+        this.cleanupUnusedTags();
+      });
+    }
+
     // Load categories
     this.loadCategories();
 
@@ -265,14 +273,6 @@ class Sidebar {
 
       this.tagsList.appendChild(item);
     });
-
-    // Setup cleanup button
-    const cleanupBtn = document.getElementById('cleanup-tags-btn');
-    if (cleanupBtn) {
-      cleanupBtn.addEventListener('click', () => {
-        this.cleanupUnusedTags();
-      });
-    }
   }
 
   async cleanupUnusedTags() {

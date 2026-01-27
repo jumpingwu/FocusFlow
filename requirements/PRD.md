@@ -37,6 +37,7 @@ interface Item {
   title: string;
   notes: string; // Rich Text (Markdown/HTML). Must support URLs, embedded images, and formatting.
   category: string;
+  tags: string[];
   status: Status; // Default: 'Todo'
   priority: Priority;
   urgency: Urgency;
@@ -112,8 +113,8 @@ interface ArchivedItem {
 ### 4.5. Filtering, Search & Matrix
 
 -   **Global Text Search:** A real-time filter for Pane 2.
-    
-    -   **Scope:** Matches `Title`, `Category`, and `Notes`.
+
+    -   **Scope:** Matches `Title`, `Category`, `Tags`, and `Notes`.
         
     -   **Note on Logs:** Search should check `Manual Logs` content. If a match is found in the logs but not the title, the item should still appear in the filtered list.
         

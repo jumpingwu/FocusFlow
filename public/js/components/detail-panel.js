@@ -266,10 +266,26 @@ class DetailPanel {
     // Tags input (multi-select)
     const tagsGroup = document.createElement('div');
     tagsGroup.className = 'form-group';
-    tagsGroup.innerHTML = `
-      <label class="form-label" for="detail-tags-input">Tags</label>
-      <input type="text" class="form-input" id="detail-tags-input" placeholder="Add tags..." ${isArchived ? 'disabled' : ''}>
-    `;
+
+    if (isArchived) {
+      // For archived items, render tags as static pill badges
+      const tagsHtml = item.tags && item.tags.length > 0
+        ? item.tags.map(tag => `<span class="task-tag">${window.helpers.escapeHtml(tag)}</span>`).join('')
+        : '<em style="color: var(--color-text-muted);">No tags</em>';
+
+      tagsGroup.innerHTML = `
+        <label class="form-label">Tags</label>
+        <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-xs);">
+          ${tagsHtml}
+        </div>
+      `;
+    } else {
+      // For active items, render editable multi-select input
+      tagsGroup.innerHTML = `
+        <label class="form-label" for="detail-tags-input">Tags</label>
+        <input type="text" class="form-input" id="detail-tags-input" placeholder="Add tags...">
+      `;
+    }
     this.bodyEl.appendChild(tagsGroup);
 
     // Status selector

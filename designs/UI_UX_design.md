@@ -45,7 +45,32 @@ Based on the "Zen Writer" aesthetic, the interface prioritizes whitespace, typog
 -   **Body (Notes/Logs):** 16px, Regular, 1.6 Line-height (Optimized for long reading).
     
 -   **Metadata:** 12px, Medium, Gray-500.
-    
+
+### 2.3. Categories and Tags Visual Design
+
+The application uses distinct visual treatments for categories and tags to reflect their different semantic roles:
+
+**Categories (Primary Classification):**
+- **Visual Style:** Solid badges with prominent appearance
+- **Background:** Primary color (`#57534E`)
+- **Text:** White with medium font weight
+- **Border:** None
+- **Semantics:** Represents primary structural organization (one category per item)
+- **Purpose:** Hierarchical classification like folders
+
+**Tags (Flexible Labels):**
+- **Visual Style:** Outline pills with subtle appearance
+- **Background:** Transparent
+- **Border:** Light gray (`#F2F2F2`)
+- **Text:** Secondary color (`#6B7280`)
+- **Spacing:** 4px right margin between multiple tags
+- **Semantics:** Represents flexible, non-hierarchical labels (multiple tags per item)
+- **Purpose:** Cross-cutting classification like labels
+
+**Visual Hierarchy:**
+- Categories appear more prominent and immediately recognizable as primary classification
+- Tags appear softer and supplementary, supporting the primary category structure
+- This distinction helps users quickly scan and understand the organizational structure of items
 
 ## 3\. Layout Structure
 
@@ -133,7 +158,13 @@ Based on the "Zen Writer" aesthetic, the interface prioritizes whitespace, typog
     -   **Validation:** If `Pending` or `Cancelled` is clicked, the "Progress Update" log field (Section 4.2) is automatically focused and highlighted in amber, requiring input before the panel can be closed.
         
 -   **Attachments Gallery:** Files appear as "File Cards" with small icons (PDF, IMG, DOC) and a download/remove action.
-    
+
+-   **Archive Display:** When viewing an archived item, the detail panel shows:
+    - **Archive Timestamp:** Displayed at the top of the panel showing when the item was archived (formatted date and time)
+    - **Original Status:** The item's status at the time of archiving is preserved and displayed
+    - **Read-Only Mode:** All fields are disabled and displayed in read-only mode
+    - **Tags:** Tags are preserved and displayed as static pill badges (non-editable)
+    - **Actions:** Restore and Permanently Delete buttons are available to manage archived items
 
 ### 3.4. Unified Header Design
 
@@ -162,9 +193,37 @@ This design follows modern application patterns seen in world-class tools like N
     -   **Keyboard Navigation:** Arrow keys to navigate, Enter to select, Escape to close
     
 -   **Visual:** Dropdown appears below the input field with a shadow. Selected/highlighted items have a background tint.
-    
 
-### 4.2. Progress Logging & History Filter
+### 4.2. Multi-Select Tag System
+
+-   **UX Pattern:** The tags field is a multi-select component that allows selecting multiple tags and creating new ones:
+
+    -   **Pill-Based Selection:** Selected tags appear as removable pill badges above the input field
+    -   **Dropdown Display:** When focused, shows a list of existing tags filtered by input text
+    -   **Filtering:** As you type, the dropdown shows tags matching the input
+    -   **Selection:** Click on a tag or use arrow keys + Enter/Tab to select
+    -   **Creation:** Type a new tag name and press Enter to create it and add to the global tag pool
+    -   **Removal:** Click the × on a pill badge or press Backspace when input is empty to remove the last tag
+    -   **Keyboard Navigation:**
+        -   `ArrowDown/ArrowUp`: Navigate dropdown options
+        -   `Enter`: Select highlighted option OR create new tag from input
+        -   `Tab`: Select highlighted option
+        -   `Escape`: Close dropdown
+        -   `Backspace`: Remove last selected tag (when input is empty)
+
+-   **Visual:** Dropdown appears below the input field with a shadow. Selected tags appear as pill badges with remove buttons. Tags in the task list display as outline pills with spacing.
+
+-   **Tags Sidebar:** A dedicated section in the sidebar displays all tags with usage counts, sorted by frequency (most used first). Clicking a tag filters the task list to show only items with that tag.
+
+-   **Cleanup Functionality:** A "Cleanup Unused Tags" button in the sidebar allows users to identify and delete all tags with zero usage count. Shows a confirmation dialog with the list of tags to be deleted.
+
+-   **Tags in Archived Items:** Tags are preserved when items are archived and displayed as static (non-editable) pill badges in the archived item detail panel.
+
+-   **Visual Distinction from Categories:**
+    -   **Categories:** Solid badges with primary color background, white text, bold weight - represents primary classification (one per item)
+    -   **Tags:** Outline pills with transparent background, secondary text color - represents flexible, non-hierarchical labels (multiple per item)
+
+### 4.3. Progress Logging & History Filter
 
 -   **The History Filter:** A small segmented control at the top of the history list: `[ All | Manual ]`.
     
@@ -229,31 +288,40 @@ This design follows modern application patterns seen in world-class tools like N
 
 ## 5\. Keyboard Shortcuts & Navigation
 
+### Platform Detection
+
+The application automatically detects the operating system and adapts keyboard shortcuts accordingly:
+
+-   **macOS:** Uses `Ctrl + Shift` as the modifier key
+-   **Windows / Linux:** Uses `Alt` as the modifier key
+
+Platform detection is performed at startup using `navigator.platform`, ensuring shortcuts work correctly on each platform without manual configuration.
+
 ### 5.1. Global Shortcuts
 
--   **`Alt + F` / `Alt + N`:** Focus the Ghost Bar (Search/Capture).
-    
--   **`Alt + Enter` (Ghost Bar):** Open Detail Panel in creation mode with pre-filled title.
-    
--   **`Alt + Enter` (Detail Panel):** Save and close (creates new item in creation mode, updates existing in edit mode).
-    
--   **`Alt + 1 / 2 / 3 / 4 / 5`:** Set Status (Todo / In-progress / Pending / Completed / Cancelled) - only available when Detail Panel is open.
-    
+-   **`Alt + F` / `Alt + N` (Windows/Linux) or `Ctrl + Shift + F` / `Ctrl + Shift + N` (macOS):** Focus the Ghost Bar (Search/Capture).
+
+-   **`Alt + Enter` (Windows/Linux) or `Ctrl + Shift + Enter` (macOS) (Ghost Bar):** Open Detail Panel in creation mode with pre-filled title.
+
+-   **`Alt + Enter` (Windows/Linux) or `Ctrl + Shift + Enter` (macOS) (Detail Panel):** Save and close (creates new item in creation mode, updates existing in edit mode).
+
+-   **`Alt + 1 / 2 / 3 / 4 / 5` (Windows/Linux) or `Ctrl + Shift + 1 / 2 / 3 / 4 / 5` (macOS):** Set Status (Todo / In-progress / Pending / Completed / Cancelled) - only available when Detail Panel is open.
+
 -   **`Esc`:** Clear search or Close current panel/modal (cancels creation in creation mode).
 
 ### 5.2. List Navigation
 
--   **`Alt + Up` / `Alt + Down`:** Navigate through the item list.
+-   **`Alt + Up` / `Alt + Down` (Windows/Linux) or `Ctrl + Shift + Up` / `Ctrl + Shift + Down` (macOS):** Navigate through the item list.
 
 **Navigation Behavior:**
 
 -   **From Search Bar:**
-    - `Alt + Up`: Selects the **last** item in the list
-    - `Alt + Down`: Selects the **first** item in the list
+    - `Alt + Up` (Windows/Linux) or `Ctrl + Shift + Up` (macOS): Selects the **last** item in the list
+    - `Alt + Down` (Windows/Linux) or `Ctrl + Shift + Down` (macOS): Selects the **first** item in the list
 
 -   **Within List (Wrap-Around Navigation):**
-    - `Alt + Down` from the **last** item: Wraps to the **first** item
-    - `Alt + Up` from the **first** item: Wraps to the **last** item
+    - `Alt + Down` (Windows/Linux) or `Ctrl + Shift + Down` (macOS) from the **last** item: Wraps to the **first** item
+    - `Alt + Up` (Windows/Linux) or `Ctrl + Shift + Up` (macOS) from the **first** item: Wraps to the **last** item
 
 -   **Navigation Order:** Items are navigated in the order they are displayed on screen (grouped by matrix quadrants: Burning → Today → Other → Ideas), not by item ID.
 

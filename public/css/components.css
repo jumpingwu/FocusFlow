@@ -478,10 +478,11 @@
   display: inline-flex;
   align-items: center;
   padding: 2px var(--spacing-sm);
-  background-color: var(--color-canvas);
+  background-color: var(--color-primary);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
+  color: white;
+  font-weight: var(--font-weight-medium);
 }
 
 /* Right side metadata */
@@ -877,7 +878,7 @@
   display: inline-flex;
   align-items: center;
   padding: 2px var(--spacing-sm);
-  background-color: var(--color-canvas);
+  background-color: transparent;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-xs);
