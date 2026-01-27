@@ -70,6 +70,25 @@ body {
   position: relative;
 }
 
+/* Main Area: Ghost Bar + Panes */
+.main-area {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Panes Container: Center + Right */
+.panes-container {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
 /* Sidebar */
 .sidebar-header {
   height: 88px;
@@ -129,17 +148,24 @@ body {
 
 /* Ghost Bar */
 .ghost-bar {
-  position: sticky;
-  top: 0;
-  z-index: 5;
+  position: relative;
+  z-index: var(--z-ghost-bar);
   height: 88px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
   padding: var(--spacing-lg);
   background-color: var(--color-panel);
   border-bottom: 1px solid var(--color-border);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.ghost-bar-content {
+  width: 100%;
+  max-width: 920px;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
 }
 
 .ghost-input-wrapper {

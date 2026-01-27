@@ -74,7 +74,16 @@ The application uses distinct visual treatments for categories and tags to refle
 
 ## 3\. Layout Structure
 
-### 3.1. Navigation (Pane 1 - 250px)
+### 3.1. Overall Layout
+
+The application uses a three-pane layout with a shared header area:
+
+-   **Left Pane (Sidebar):** 250px fixed width, full-height column on the left side
+-   **Main Area:** Contains the Ghost Bar at the top and the panes container below
+    -   **Ghost Bar:** Spans across the center and right panes (not across the left sidebar), maximum content width of 920px (left-aligned)
+    -   **Panes Container:** Contains the center pane (task list) and right pane (detail panel) side by side
+
+### 3.2. Navigation (Pane 1 - 250px)
 
 -   **Smart Filters:** "Inbox", "Today", **"Overdue"** (with a red numerical badge), and **"Archived"** (with a count badge).
     
@@ -91,16 +100,8 @@ The application uses distinct visual treatments for categories and tags to refle
 -   **Interaction:** Categories should support "Drag-to-Reorder" for personal workflow sorting.
     
 
-### 3.2. Task List (Pane 2 - Flexible)
+### 3.3. Task List (Pane 2 - Flexible)
 
--   **The "Ghost" Quick Capture & Search:** \* A floating bar at the top with a `30px` blur backdrop.
-    
-    -   **Dual Functionality:** When empty, it shows a subtle "Search or capture (Alt+Enter)..." placeholder.
-        
-    -   **Search Trigger:** Typing filters the list below in real-time. A small "✕" appears to clear search.
-        
-    -   **Capture Trigger (Two-Step):** Pressing `Alt + Enter` opens the Detail Panel in creation mode with the title pre-filled. Users can then add notes, set priority/urgency, target date, and category before finalizing. All fields except title are optional.
-        
 -   **Comfortable List (2B):** `56px` row height.
     
 -   **Matrix Quadrant Grouping:** Pane 2 is divided into four sections: **1\. Critical/Burning**, **2\. High/Today**, **3\. Others**, **4\. Ideas**.
@@ -122,22 +123,34 @@ The application uses distinct visual treatments for categories and tags to refle
     -   **Overdue Styling:** Overdue dates are highlighted in red color
     
 -   **Task Selection Highlighting:** The currently selected task is visually highlighted in the task list:
-    
+
     -   **Visual Style:** Selected tasks display with a 4px left border accent in the primary color and a subtle background tint
-    
+
     -   **Selection Triggers:** A task becomes selected when:
         - Clicked to open the detail panel
         - Created as a new task (automatically highlighted after creation)
         - Updated with changes (automatically highlighted after update)
-    
+
     -   **Clear Selection:** Selection is cleared when the detail panel is closed
+
+### 3.4. Ghost Bar (Quick Capture & Search)
+
+-   **Position:** Located at the top of the main area, spanning across the center and right panes (not across the left sidebar)
+-   **Content Width:** Maximum content width of 920px, left-aligned within the full-width container
+-   **Height:** 88px (consistent with other pane headers)
+-   **Dual Functionality:**
+    -   **Search:** When empty, shows a subtle "Search or capture..." placeholder. Typing filters the task list in real-time. A small "✕" appears to clear search.
+    -   **Capture:** Pressing `Alt + Enter` (Windows/Linux) or `Ctrl + Shift + Enter` (macOS) opens the Detail Panel in creation mode with the title pre-filled
+-   **Task/Idea Toggle:** Button to switch between Task and Idea creation modes
+-   **Visual Design:** Uses the same background color and bottom border as other pane headers for visual consistency
     
 
-### 3.3. Contextual Detail Panel (Pane 3 - Fluid Width)
+### 3.5. Contextual Detail Panel (Pane 3 - Fluid Width)
 
+-   **Position:** Located in the right pane within the panes container, below the ghost bar
 -   **Fluid Width:** Adapts to viewport size using `clamp(420px, 40vw, 900px)` - 40% of viewport width, minimum 420px, maximum 900px. Provides better utilization of screen space on larger displays.
-
--   **Slide-out Transition:** A `cubic-bezier(0.4, 0, 0.2, 1)` slide from the right.
+-   **Slide-out Transition:** A `cubic-bezier(0.4, 0, 0.2, 1)` slide from the right within the panes container (does not overlap the ghost bar)
+-   **Fixed Header:** Detail panel has an 88px fixed header that remains visible when scrolling the panel content
     
 -   **Dynamic Attributes:** If Type = "Idea", the Priority/Urgency grid is replaced by a "Created Date" label only.
     
@@ -166,17 +179,16 @@ The application uses distinct visual treatments for categories and tags to refle
     - **Tags:** Tags are preserved and displayed as static pill badges (non-editable)
     - **Actions:** Restore and Permanently Delete buttons are available to manage archived items
 
-### 3.4. Unified Header Design
+### 3.6. Unified Header Design
 
-All three pane headers (Sidebar Header, Ghost Bar, Detail Panel Header) form a cohesive visual unit across the top of the application:
+The application uses a cohesive header design across different components:
 
--   **Consistent Height:** All headers are 88px tall for perfect visual alignment
--   **Unified Appearance:** No vertical separators between headers - they appear as one continuous header bar
--   **Consistent Background:** All headers use the same background color (`--color-panel`)
--   **Subtle Depth:** Shared bottom border with soft shadow (`box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04)`) creates a modern, professional "app header" feel
--   **Visual Continuity:** Creates a seamless experience across the entire width of the application
--   **Panels Below:** The content panes below maintain their distinct background colors (white for sidebar/detail, gray for task list) for visual hierarchy and separation from the header
--   **Responsive Design:** The unified header adapts gracefully to different screen sizes while maintaining its cohesive appearance
+-   **Sidebar Header:** 88px tall, located at the top of the left sidebar, displays the app title "FocusFlow"
+-   **Ghost Bar:** 88px tall, located at the top of the main area, spans across the center and right panes (maximum content width of 920px, left-aligned)
+-   **Detail Panel Header:** 88px tall, fixed at the top of the detail panel, displays item title and controls
+-   **Consistent Styling:** All headers use the same background color (`--color-panel`) and bottom border with soft shadow (`box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04)`)
+-   **Visual Hierarchy:** The ghost bar acts as a shared header for the center and right panes, while the sidebar maintains its own header, creating a clear visual separation between navigation and content areas
+-   **Responsive Design:** The header layout adapts gracefully to different screen sizes while maintaining visual consistency
 
 This design follows modern application patterns seen in world-class tools like Notion, Linear, and other contemporary productivity applications, providing a polished and professional user experience.
 

@@ -58,35 +58,40 @@
       </nav>
     </aside>
 
-    <!-- Pane 2: Task List (Flexible) -->
-    <main class="pane pane-center">
+    <!-- Main Area: Ghost Bar + Panes -->
+    <div class="main-area">
       <!-- Ghost Bar: Quick Capture & Search -->
       <div class="ghost-bar" id="ghost-bar">
-        <div class="ghost-input-wrapper">
-          <input
-            type="text"
-            class="ghost-input"
-            id="ghost-input"
-            placeholder="Search or capture..."
-            autocomplete="off"
-          >
-          <button class="ghost-clear" id="ghost-clear" title="Clear">×</button>
-        </div>
-        <div class="ghost-controls">
-          <button class="ghost-toggle" id="type-toggle" title="Toggle Task/Idea">
-            <span class="type-label">Task</span>
-          </button>
+        <div class="ghost-bar-content">
+          <div class="ghost-input-wrapper">
+            <input
+              type="text"
+              class="ghost-input"
+              id="ghost-input"
+              placeholder="Search or capture..."
+              autocomplete="off"
+            >
+            <button class="ghost-clear" id="ghost-clear" title="Clear">×</button>
+          </div>
+          <div class="ghost-controls">
+            <button class="ghost-toggle" id="type-toggle" title="Toggle Task/Idea">
+              <span class="type-label">Task</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Task List with Matrix Grouping -->
-      <div class="task-list-container" id="task-list-container">
-        <!-- Matrix sections will be dynamically inserted -->
-      </div>
-    </main>
+      <!-- Panes Container: Center + Right -->
+      <div class="panes-container">
+        <!-- Pane 2: Task List (Flexible) -->
+        <main class="pane pane-center">
+          <!-- Task List with Matrix Grouping -->
+          <div class="task-list-container" id="task-list-container">
+            <!-- Matrix sections will be dynamically inserted -->
+          </div>
+        </main>
 
-    <!-- Pane 3: Detail Panel (420px) -->
-
+        <!-- Pane 3: Detail Panel (420px) -->
         <aside class="pane pane-right" id="detail-panel">
 
           <div class="detail-panel-content">
@@ -153,10 +158,15 @@
 
           </div>
 
-        </aside>
-  </div>
+                  </aside>
 
-  <!-- Daily Review Modal -->
+                </div>
+
+              </div>
+
+          
+
+            <!-- Daily Review Modal -->
   <div class="modal-overlay" id="daily-review-modal">
     <div class="modal-content">
       <div class="modal-header">

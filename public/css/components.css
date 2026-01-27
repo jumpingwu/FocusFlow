@@ -928,6 +928,15 @@
   text-decoration: underline;
 }
 
+.notes-content a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.notes-content a:hover {
+  text-decoration: underline;
+}
+
 .notes-rendered img {
   max-width: 100%;
   height: auto;
@@ -1128,7 +1137,7 @@
 }
 
 .log-entry.system {
-  border-left: 3px solid var(--color-primary);
+  border-left: 3px solid var(--color-log-system);
 }
 
 .log-entry.manual {
