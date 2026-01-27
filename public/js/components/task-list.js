@@ -180,11 +180,16 @@ class TaskList {
       archivedBy: archived.archivedBy
     }));
 
-    // Set displayed items to the normalized archived items
-    this.displayedItems = normalizedItems;
+    // Separate tasks and ideas
+    const tasks = normalizedItems.filter(item => item.type === 'Task');
+    const ideas = normalizedItems.filter(item => item.type === 'Idea');
 
-    // Create a single section for archived items
-    this.renderGroup('ARCHIVED ITEMS', normalizedItems, true);
+    // Build displayed items array in the order they're rendered
+    this.displayedItems = [...tasks, ...ideas];
+
+    // Render each group
+    this.renderGroup('ARCHIVED TASKS', tasks, true);
+    this.renderGroup('ARCHIVED IDEAS', ideas, true);
   }
 
   renderGroup(title, items, isArchived = false) {
