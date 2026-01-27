@@ -127,18 +127,17 @@ class RichTextEditor {
           result = `${'#'.repeat(level)} ${children}\n`;
           break;
         case 'p':
-          result = `\n${children}\n`;
+          result = `${children}\n\n`;
           break;
         case 'br':
           result = '\n';
           break;
         case 'ul':
-          result = '\n' + children.split('\n').filter(line => line.trim()).map(line => `- ${line}`).join('\n') + '\n';
-          break;
+                  result = children.split('\n').filter(line => line.trim()).map(line => `- ${line}`).join('\n') + '\n';
+                  break;
         case 'ol':
-          result = '\n' + children.split('\n').filter(line => line.trim()).map((line, i) => `${i + 1}. ${line}`).join('\n') + '\n';
-          break;
-        case 'li':
+                  result = children.split('\n').filter(line => line.trim()).map((line, i) => `${i + 1}. ${line}`).join('\n') + '\n';
+                  break;        case 'li':
           result = `${children}\n`;
           break;
         case 'blockquote':

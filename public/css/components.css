@@ -1088,6 +1088,25 @@
   color: var(--color-text-secondary);
 }
 
+/* Lists */
+.notes-rendered ul,
+.notes-rendered ol {
+  margin: var(--spacing-sm) 0;
+  padding-left: var(--spacing-lg);
+}
+
+.notes-rendered ul ul,
+.notes-rendered ol ol,
+.notes-rendered ul ol,
+.notes-rendered ol ul {
+  margin: var(--spacing-xs) 0;
+  padding-left: var(--spacing-md);
+}
+
+.notes-rendered li {
+  margin: var(--spacing-xs) 0;
+}
+
 /* Attribute Grid */
 .attribute-grid {
   display: grid;
@@ -1245,6 +1264,25 @@
 .log-message h6 {
   font-size: 0.9em;
   color: var(--color-text-secondary);
+}
+
+/* Lists in log messages */
+.log-message ul,
+.log-message ol {
+  margin: var(--spacing-sm) 0;
+  padding-left: var(--spacing-lg);
+}
+
+.log-message ul ul,
+.log-message ol ol,
+.log-message ul ol,
+.log-message ol ul {
+  margin: var(--spacing-xs) 0;
+  padding-left: var(--spacing-md);
+}
+
+.log-message li {
+  margin: var(--spacing-xs) 0;
 }
 
 .log-restore-btn {

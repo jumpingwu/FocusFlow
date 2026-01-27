@@ -175,14 +175,14 @@ function linkify(text) {
       return part;
     }
 
-    // Convert URLs to clickable links
+    // Convert URLs to markdown links
     const urlRegex = /(https?:\/\/[^\s<]+|www\.[^\s<]+|localhost:[^\s<]+)/g;
     return part.replace(urlRegex, (url) => {
       let href = url;
       if (!href.startsWith('http')) {
         href = 'http://' + url;
       }
-      return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+      return `[${url}](${href})`;
     });
   }).join('');
 }
@@ -239,69 +239,79 @@ function parseMarkdown(text) {
   // Step 6: Process inline code
   html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
 
-  // Step 7: Process ordered lists (before unordered to avoid conflicts)
-  html = html.replace(/^[\s]*(\d+)\.\s+(.+)$/gm, '<li>$2</li>');
-  // Wrap consecutive ordered list items
-  html = html.replace(/(<li>.*<\/li>)\n(?!<li>)/g, '$1</ol>\n');
-  html = html.replace(/(?<!<\/ol>\n)(<li>)/g, '<ol>$1');
-
-  // Step 8: Process lists (both ordered and unordered)
+  // Step 7: Process lists (both ordered and unordered) with proper nesting
   const lines = html.split('\n');
   let result = [];
-  let inUnordered = false;
-  let inOrdered = false;
-  let currentList = [];
-  let listType = null;
+  let stack = []; // Stack of open lists { type: 'ul'|'ol', indent: number, items: [] }
+  let currentIndent = 0;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    const unorderedMatch = line.match(/^[\s]*[-*]\s+(.+)$/);
-    const orderedMatch = line.match(/^[\s]*(\d+)\.\s+(.+)$/);
+    const unorderedMatch = line.match(/^(\s*)([-*])\s+(.+)$/);
+    const orderedMatch = line.match(/^(\s*)(\d+)\.\s+(.+)$/);
 
-    if (unorderedMatch) {
-      if (!inUnordered) {
-        // Close ordered list if open
-        if (inOrdered) {
-          result.push(`<ol>${currentList.join('')}</ol>`);
-          inOrdered = false;
-          currentList = [];
+    if (unorderedMatch || orderedMatch) {
+      const isUnordered = !!unorderedMatch;
+      const indent = (unorderedMatch ? unorderedMatch[1] : orderedMatch[1]).length;
+      const content = unorderedMatch ? unorderedMatch[3] : orderedMatch[3];
+      const type = isUnordered ? 'ul' : 'ol';
+
+      // Calculate indent level (2 spaces per level)
+      const indentLevel = Math.floor(indent / 2);
+
+      // Close lists that are at deeper level (indent > current)
+      while (stack.length > 0 && stack[stack.length - 1].indentLevel > indentLevel) {
+        const closedList = stack.pop();
+        const listTag = `<${closedList.type}>${closedList.items.join('')}</${closedList.type}>`;
+        if (stack.length > 0) {
+          stack[stack.length - 1].items.push(listTag);
+        } else {
+          result.push(listTag);
         }
-        inUnordered = true;
-        listType = 'ul';
       }
-      currentList.push(`<li>${unorderedMatch[1]}</li>`);
-    } else if (orderedMatch) {
-      if (!inOrdered) {
-        // Close unordered list if open
-        if (inUnordered) {
-          result.push(`<ul>${currentList.join('')}</ul>`);
-          inUnordered = false;
-          currentList = [];
+
+      // If same level but different type, close current list
+      if (stack.length > 0 && stack[stack.length - 1].indentLevel === indentLevel && stack[stack.length - 1].type !== type) {
+        const closedList = stack.pop();
+        const listTag = `<${closedList.type}>${closedList.items.join('')}</${closedList.type}>`;
+        if (stack.length > 0) {
+          stack[stack.length - 1].items.push(listTag);
+        } else {
+          result.push(listTag);
         }
-        inOrdered = true;
-        listType = 'ol';
       }
-      currentList.push(`<li>${orderedMatch[2]}</li>`);
+
+      // Add new list if needed
+      if (stack.length === 0 || stack[stack.length - 1].indentLevel < indentLevel) {
+        stack.push({ type, indentLevel, items: [] });
+      }
+
+      // Add the list item
+      stack[stack.length - 1].items.push(`<li>${content}</li>`);
     } else {
-      // Close any open list
-      if (inUnordered) {
-        result.push(`<ul>${currentList.join('')}</ul>`);
-        inUnordered = false;
-        currentList = [];
-      } else if (inOrdered) {
-        result.push(`<ol>${currentList.join('')}</ol>`);
-        inOrdered = false;
-        currentList = [];
+      // Close all open lists
+      while (stack.length > 0) {
+        const closedList = stack.pop();
+        const listTag = `<${closedList.type}>${closedList.items.join('')}</${closedList.type}>`;
+        if (stack.length > 0) {
+          stack[stack.length - 1].items.push(listTag);
+        } else {
+          result.push(listTag);
+        }
       }
       result.push(line);
     }
   }
 
-  // Don't forget the last list
-  if (inUnordered) {
-    result.push(`<ul>${currentList.join('')}</ul>`);
-  } else if (inOrdered) {
-    result.push(`<ol>${currentList.join('')}</ol>`);
+  // Close any remaining open lists
+  while (stack.length > 0) {
+    const closedList = stack.pop();
+    const listTag = `<${closedList.type}>${closedList.items.join('')}</${closedList.type}>`;
+    if (stack.length > 0) {
+      stack[stack.length - 1].items.push(listTag);
+    } else {
+      result.push(listTag);
+    }
   }
 
   html = result.join('\n');
@@ -318,12 +328,8 @@ function parseMarkdown(text) {
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
 
-  // Step 12: Process line breaks (but not inside block elements)
-  // First, add breaks after block elements
-  html = html.replace(/(<\/table>|<\/ul>|<\/ol>|<\/pre>)\n/g, '$1<br><br>');
-  // Then convert remaining newlines
-  html = html.replace(/\n\n/g, '<br><br>');
-  html = html.replace(/\n/g, '<br>');
+  // Step 12: Convert double newlines to paragraph breaks
+  html = html.replace(/\n\n/g, '<br>');
 
   return html;
 }
