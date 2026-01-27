@@ -219,7 +219,6 @@ body {
   justify-content: space-between;
   padding: var(--spacing-lg);
   border-bottom: 1px solid var(--color-border);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .detail-title {

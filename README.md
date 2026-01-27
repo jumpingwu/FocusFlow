@@ -39,7 +39,7 @@ Then open your browser and navigate to `http://localhost:3000`
 ## Project Structure
 
 ```
-todo_list_2/
+FocusFlow/
 ├── server.js                 # Express server entry point
 ├── data.json                 # Main data storage
 ├── data.json.bak             # Data backup file
@@ -52,6 +52,7 @@ todo_list_2/
 │       ├── items.js          # Item CRUD, archive, filter operations
 │       ├── upload.js         # File upload handling
 │       ├── categories.js     # Category CRUD operations
+│       ├── tags.js           # Tag management operations
 │       └── review.js         # Daily review endpoints
 ├── public/                   # Frontend assets
 │   ├── index.html            # Main page
@@ -71,7 +72,8 @@ todo_list_2/
 │   │   │   ├── daily-review-modal.js # Daily review modal
 │   │   │   ├── sidebar.js    # Category sidebar
 │   │   │   ├── ghost-bar.js  # Search/capture bar
-│   │   │   └── creatable-select.js # Select component
+│   │   │   ├── creatable-select.js # Select component
+│   │   │   └── multi-select.js     # Multi-select component for tags
 │   │   └── utils/            # Utility functions
 │   │       ├── api.js        # API client
 │   │       ├── helpers.js    # Helper functions (markdown parsing)

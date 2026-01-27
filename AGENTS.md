@@ -32,12 +32,56 @@ FocusFlow 是一个基于 Node.js 的个人生产力系统，专注于快速捕�
 ├── public/                # 前端资源
 │   ├── index.html         # 主页面
 │   ├── css/               # 样式表
+│   │   ├── variables.css  # CSS 变量（包括 --color-primary 和 --color-secondary）
+│   │   ├── layout.css     # 布局样式（包括 .main-area 和 .panes-container）
+│   │   ├── components.css # 组件样式
+│   │   └── animations.css # 动画样式
 │   └── js/                # JavaScript
 │       ├── app.js         # 应用入口
 │       ├── components/    # UI 组件
+│       │   ├── ghost-bar.js           # 快速捕获和搜索栏（位于 main-area 顶部）
+│       │   ├── task-list.js           # 任务列表（位于 .pane-center）
+│       │   ├── detail-panel.js        # 详情面板（位于 .pane-right）
+│       │   ├── rich-text-editor.js    # 富文本编辑器
+│       │   ├── attachments-gallery.js # 附件画廊
+│       │   ├── log-history.js         # 进度日志历史
+│       │   ├── daily-review-modal.js  # 每日回顾模态框
+│       │   ├── sidebar.js             # 侧边栏（分类和标签）
+│       │   ├── creatable-select.js    # 可创建选择框（分类）
+│       │   └── multi-select.js        # 多选组件（标签）
 │       └── utils/         # 工具函数
+│           ├── api.js     # API 客户端
+│           ├── helpers.js # 辅助函数（Markdown 解析）
+│           ├── shortcuts.js # 键盘快捷键
+│           └── storage.js # 本地存储工具
 └── uploads/               # 文件上传目录（需 git 忽略）
 ```
+
+### 布局结构
+
+应用使用三栏布局，带有共享的头部区域：
+
+```
+┌─────────────────────────────────────────────────┐
+│ Sidebar (250px) │  Ghost Bar (spans center+right) │
+├─────────────────┼──────────────────┬──────────────┤
+│ Sidebar         │  Task List       │  Detail Panel │
+│                 │  (.pane-center)  │  (.pane-right)│
+└─────────────────┴──────────────────┴──────────────┘
+```
+
+**HTML 结构：**
+- `.app-container`: 主容器（flex row）
+  - `.pane-left`: 左侧边栏（250px 固定宽度）
+  - `.main-area`: 主区域（flex column）
+    - `.ghost-bar`: 快速捕获和搜索栏（88px 高度，最大内容宽度 920px）
+    - `.panes-container`: 面板容器（flex row）
+      - `.pane-center`: 中心面板（任务列表，flex: 1）
+      - `.pane-right`: 右侧面板（详情面板，clamp(420px, 40vw, 900px)）
+
+**CSS 变量：**
+- `--color-primary: #60A5FA` (蓝色) - 用于活跃/选中元素
+- `--color-secondary: #57534E` (灰色) - 用于非活跃/系统元素
 
 ## 构建和运行
 

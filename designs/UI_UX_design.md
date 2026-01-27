@@ -18,22 +18,33 @@ Based on the "Zen Writer" aesthetic, the interface prioritizes whitespace, typog
 ### 2.1. Color Palette (Zen/Subtle 4B)
 
 -   **App Canvas:** `#F9F9F9` (Off-White) / `#1C1C1E` (Soft Dark).
-    
+
 -   **Active Panel:** `#FFFFFF` (Pure White) / `#2C2C2E` (Dark).
-    
+
 -   **Border/Separator:** `#F2F2F2` (Extremely faint).
-    
+
+-   **Primary Color:** `#60A5FA` (Blue Accent) — Used for active/selected elements:
+    - Selected task items (left border & background)
+    - Hyperlinks (Notes, Progress Update, Log messages)
+    - Manual log items (left border)
+    - Primary buttons & hover states
+    - Input focus borders & shadows
+    - Filter active states
+
+-   **Secondary Color:** `#57534E` (Dark Gray) — Used for inactive/system elements:
+    - Unselected task items (left border)
+    - System log items (left border)
+    - Button hover states
+
 -   **Accents (Semantic Dots):**
-    
+
     -   _Urgency - Burning:_ `#EF4444` (Red dot)
-        
+
     -   _Urgency - Today:_ `#F59E0B` (Amber dot)
-        
+
     -   _Urgency - Later:_ `#10B981` (Green dot)
-        
+
     -   _Overdue Marker:_ Deep Red text (`#991B1B`) + Faint red tint background on the card.
-        
-    -   _Primary Action:_ `#57534E` (Stone-600) — Muted professional tone.
         
 
 ### 2.2. Typography
@@ -52,7 +63,7 @@ The application uses distinct visual treatments for categories and tags to refle
 
 **Categories (Primary Classification):**
 - **Visual Style:** Solid badges with prominent appearance
-- **Background:** Primary color (`#57534E`)
+- **Background:** Primary color (`#60A5FA` - blue accent)
 - **Text:** White with medium font weight
 - **Border:** None
 - **Semantics:** Represents primary structural organization (one category per item)
@@ -186,7 +197,7 @@ The application uses a cohesive header design across different components:
 -   **Sidebar Header:** 88px tall, located at the top of the left sidebar, displays the app title "FocusFlow"
 -   **Ghost Bar:** 88px tall, located at the top of the main area, spans across the center and right panes (maximum content width of 920px, left-aligned)
 -   **Detail Panel Header:** 88px tall, fixed at the top of the detail panel, displays item title and controls
--   **Consistent Styling:** All headers use the same background color (`--color-panel`) and bottom border with soft shadow (`box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04)`)
+-   **Consistent Styling:** All headers use the same background color (`--color-panel`) and bottom border. Sidebar header and ghost bar have a soft shadow (`box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04)`) for depth.
 -   **Visual Hierarchy:** The ghost bar acts as a shared header for the center and right panes, while the sidebar maintains its own header, creating a clear visual separation between navigation and content areas
 -   **Responsive Design:** The header layout adapts gracefully to different screen sizes while maintaining visual consistency
 
@@ -238,11 +249,16 @@ This design follows modern application patterns seen in world-class tools like N
 ### 4.3. Progress Logging & History Filter
 
 -   **The History Filter:** A small segmented control at the top of the history list: `[ All | Manual ]`.
-    
+
 -   **Log Section Bottom:** Reverse-chronological timeline.
-    
+
+-   **Log Styling:**
+    - **System Logs:** Left border in secondary color (dark gray `#57534E`) — indicates automated system-generated changes
+    - **Manual Logs:** Left border in primary color (blue `#60A5FA`) — indicates user-initiated progress updates
+    - **Hyperlinks:** Log messages contain hyperlinks styled with primary color for better visibility
+
 -   **Note Versioning:** "Restore" icon appears only on system logs that track a `Notes` field modification.
-    
+
 -   **Rich Text Support:** Progress Update field supports full markdown syntax (same as Notes field) with View/Edit toggle for switching between edit and rendered modes.
     
 

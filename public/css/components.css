@@ -37,8 +37,8 @@
 }
 
 .btn-primary:hover {
-  background-color: #44403C;
-  border-color: #44403C;
+  background-color: var(--color-secondary);
+  border-color: var(--color-secondary);
 }
 
 .btn-secondary {
@@ -377,6 +377,7 @@
   min-height: var(--task-row-height);
   background-color: var(--color-panel);
   border: 1px solid #E5E5E5;
+  border-left: 4px solid var(--color-secondary);
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -458,12 +459,12 @@
 /* Selected task row */
 .task-row.selected {
   border-left: 4px solid var(--color-primary);
-  background-color: rgba(87, 83, 78, 0.05);
+  background-color: rgba(96, 165, 250, 0.05);
 }
 
 .task-row.selected:hover {
   border-left: 4px solid var(--color-primary);
-  background-color: rgba(87, 83, 78, 0.08);
+  background-color: rgba(96, 165, 250, 0.08);
 }
 
 .task-meta {
@@ -696,7 +697,7 @@
 .form-textarea:focus,
 .form-select:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(87, 83, 78, 0.1);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
 }
 
 .form-textarea {
@@ -724,7 +725,7 @@
 
 .creatable-select-input:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(87, 83, 78, 0.1);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
 }
 
 .creatable-select-dropdown {
@@ -830,7 +831,7 @@
 
 .multi-select-input:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(87, 83, 78, 0.1);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
 }
 
 .multi-select-dropdown {
@@ -1137,11 +1138,11 @@
 }
 
 .log-entry.system {
-  border-left: 3px solid var(--color-log-system);
+  border-left: 3px solid var(--color-secondary);
 }
 
 .log-entry.manual {
-  border-left: 3px solid var(--color-status-inprogress);
+  border-left: 3px solid var(--color-primary);
 }
 
 .log-timestamp {
