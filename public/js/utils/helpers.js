@@ -217,17 +217,25 @@ function parseMarkdown(text) {
   let html = text;
 
   // Step 2: Protect markdown links and images with placeholders
-  // Handle links with nested brackets: match [text](url) where text can contain []
-  html = html.replace(/\[((?:[^\]]|\](?!\()|\[\])*)\]\(([^)]+)\)/g, '___MD_LINK_START___$1___MD_LINK_URL___$2___MD_LINK_END___');
+  // Process images FIRST (with !) to avoid leaving the ! behind
   html = html.replace(/!\[([^\]]+)\]\(([^)]+)\)/g, '___MD_IMG_START___$1___MD_IMG_URL___$2___MD_IMG_END___');
+  // Then handle links with nested brackets: match [text](url) where text can contain []
+  html = html.replace(/\[((?:[^\]]|\](?!\()|\[\])*)\]\(([^)]+)\)/g, '___MD_LINK_START___$1___MD_LINK_URL___$2___MD_LINK_END___');
 
   // Step 3: Escape HTML (but not our placeholders)
   html = escapeHtml(html);
 
   // Step 4: Restore protected elements
-  html = html.replace(/___MD_LINK_START___(.+?)___MD_LINK_URL___(.+?)___MD_LINK_END___/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  html = html.replace(/___MD_LINK_START___(.+?)___MD_LINK_URL___(.+?)___MD_LINK_END___/g, (match, text, url) => {
+    // Check if the URL points to an image
+    const imageExtensions = /\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)(\?.*)?$/i;
+    if (imageExtensions.test(url)) {
+      return `<img src="${url}" alt="${text}">`;
+    }
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+  });
   html = html.replace(/___MD_IMG_START___(.+?)___MD_IMG_URL___(.+?)___MD_IMG_END___/g, '<img src="$2" alt="$1">');
-  
+
   // Restore tables
   tables.forEach((tableHtml, index) => {
     html = html.replace(`___TABLE_${index}___`, tableHtml);
