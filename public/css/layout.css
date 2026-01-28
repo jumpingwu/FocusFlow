@@ -138,6 +138,41 @@ body {
   gap: var(--spacing-xs);
 }
 
+/* Collapse Toggle Styles */
+.category-header {
+  display: flex;
+  align-items: center;
+}
+
+.collapse-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-right: var(--spacing-xs);
+  cursor: pointer;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  transition: color var(--transition-fast);
+}
+
+.collapse-toggle:hover {
+  color: var(--color-text-secondary);
+}
+
+.collapse-icon {
+  transition: transform var(--transition-fast);
+}
+
+.category-section.collapsed .collapse-icon {
+  transform: rotate(-90deg);
+}
+
+.category-section.collapsed .category-list,
+.category-section.collapsed .tags-list {
+  display: none;
+}
+
 /* Center Pane - Task List */
 .task-list-container {
   flex: 1;

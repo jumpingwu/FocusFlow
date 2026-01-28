@@ -19,6 +19,9 @@ class Sidebar {
   }
 
   init() {
+    // Initialize collapse state
+    this.initCollapseState();
+
     // Load saved filter
     const savedFilter = window.storage.getSelectedFilter();
     if (savedFilter) {
@@ -36,6 +39,16 @@ class Sidebar {
       btn.addEventListener('click', () => {
         const filter = btn.dataset.filter;
         this.setFilter(filter);
+      });
+    });
+
+    // Setup collapse toggle buttons
+    document.querySelectorAll('.collapse-toggle').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const section = e.target.closest('.category-section');
+        const sectionId = section.dataset.section;
+        this.toggleSection(sectionId, section);
       });
     });
 
@@ -68,6 +81,22 @@ class Sidebar {
       this.loadCategories();
       this.loadTags();
     });
+  }
+
+  initCollapseState() {
+    const collapsed = window.storage.getCollapsedSections();
+
+    document.querySelectorAll('.category-section').forEach(section => {
+      const sectionId = section.dataset.section;
+      if (collapsed[sectionId]) {
+        section.classList.add('collapsed');
+      }
+    });
+  }
+
+  toggleSection(sectionId, section) {
+    const isCollapsed = window.storage.toggleSectionCollapse(sectionId);
+    section.classList.toggle('collapsed', isCollapsed);
   }
 
   setFilter(filter) {
