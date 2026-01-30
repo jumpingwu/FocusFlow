@@ -45,6 +45,9 @@ class RichTextEditor {
 
     let markdown = '';
 
+    // Block elements that create their own spacing
+    const blockElements = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'table', 'pre', 'div', 'br'];
+
     // Helper to get text content excluding SVG elements
     const getTextWithoutSvg = (node) => {
       let text = '';
@@ -59,7 +62,7 @@ class RichTextEditor {
     };
 
     // Process nodes recursively
-    const processNode = (node) => {
+    const processNode = (node, parentIsBlock = false) => {
       if (node.nodeType === Node.TEXT_NODE) {
         return node.textContent;
       }
@@ -96,8 +99,14 @@ class RichTextEditor {
         return result;
       }
 
+      // Check if this is a block element
+      const isBlock = blockElements.includes(tagName);
+
       // Process child nodes for other elements
-      const children = Array.from(node.childNodes).map(processNode).join('');
+      // Only add separator between block elements, not within elements
+      const children = Array.from(node.childNodes)
+        .map(child => processNode(child, isBlock))
+        .join(isBlock ? '' : '');
 
       switch (tagName) {
         case 'b':
@@ -171,9 +180,27 @@ class RichTextEditor {
     };
 
     // Process all child nodes
+    const results = [];
     Array.from(div.childNodes).forEach(node => {
-      markdown += processNode(node);
+      const isBlock = node.nodeType === Node.ELEMENT_NODE && blockElements.includes(node.tagName.toLowerCase());
+      const result = processNode(node);
+      if (result) {
+        results.push({ result, isBlock });
+      }
     });
+
+    // Join results with proper spacing
+    for (let i = 0; i < results.length; i++) {
+      const { result, isBlock } = results[i];
+      markdown += result;
+
+      // If this is a block element and the next one is also a block element,
+      // ensure exactly one newline between them
+      if (isBlock && i < results.length - 1 && results[i + 1].isBlock) {
+        // Strip trailing newlines and add back exactly one
+        markdown = markdown.replace(/[\n]+$/, '') + '\n';
+      }
+    }
 
     // Clean up extra whitespace
     markdown = markdown.replace(/\n{3,}/g, '\n\n').trim();
