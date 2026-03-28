@@ -436,6 +436,18 @@
   font-weight: bold;
 }
 
+.task-checkbox.cancelled {
+  background-color: var(--color-status-cancelled);
+  border-color: var(--color-status-cancelled);
+}
+
+.task-checkbox.cancelled::after {
+  content: '✗';
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
 .task-content {
   flex: 1;
   min-width: 0;
@@ -451,7 +463,8 @@
   transition: color var(--transition-fast);
 }
 
-.task-row.completed .task-title {
+.task-row.completed .task-title,
+.task-row.cancelled .task-title {
   text-decoration: line-through;
   color: var(--color-text-muted);
 }
@@ -1394,4 +1407,81 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 
 .attachment-delete:hover {
   background-color: var(--color-urgency-burning);
+}
+
+/* Daily Review Modal */
+#daily-review-modal .modal-content {
+  max-width: 800px;
+}
+
+#daily-review-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.modal-header-right {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+#review-modal-footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.review-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--spacing-lg);
+}
+
+.review-footer-row:first-child {
+  align-items: flex-end;
+}
+
+.review-footer-row:last-child {
+  align-items: center;
+}
+
+.review-controls {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: flex-end;
+  flex: 1;
+}
+
+.review-control-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.review-control-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.review-progress {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.review-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
 }

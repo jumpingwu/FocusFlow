@@ -6,6 +6,7 @@ class DailyReviewModal {
   constructor() {
     this.modal = document.getElementById('daily-review-modal');
     this.modalBody = document.getElementById('review-modal-body');
+    this.modalFooter = document.getElementById('review-modal-footer');
     this.skipBtn = document.getElementById('review-skip');
     this.completeBtn = document.getElementById('review-complete');
 
@@ -68,6 +69,13 @@ class DailyReviewModal {
 
     const item = this.overdueItems[this.currentIndex];
 
+    const statusOptions = ['Todo', 'In-progress', 'Pending', 'Completed', 'Cancelled'];
+    const priorityOptions = ['Critical', 'High', 'Medium', 'Low', 'Undefined'];
+    const urgencyOptions = ['Burning', 'Today', 'Later', 'Undefined'];
+
+    const optionHtml = (options, current) =>
+      options.map(o => `<option value="${o}" ${o === current ? 'selected' : ''}>${o}</option>`).join('');
+
     this.modalBody.innerHTML = `
       <div class="review-item fade-in">
         <div class="review-item-header">
@@ -77,34 +85,59 @@ class DailyReviewModal {
           </span>
         </div>
 
-        <div class="review-item-notes">
+        <div class="notes-rendered">
           ${item.notes ? window.helpers.parseMarkdown(item.notes) : '<p class="empty-state">No notes</p>'}
-        </div>
-
-        <div class="review-actions">
-          <button class="btn btn-secondary review-action-btn" data-action="renew">
-            📅 Renew (Set to Today)
-          </button>
-          <button class="btn btn-secondary review-action-btn" data-action="deprioritize">
-            ⬇️ Deprioritize
-          </button>
-          <button class="btn btn-secondary review-action-btn" data-action="archive">
-            📦 Archive
-          </button>
-        </div>
-
-        <div class="review-progress">
-          ${this.currentIndex + 1} of ${this.overdueItems.length}
         </div>
       </div>
     `;
 
-    // Add action button listeners
-    const actionButtons = this.modalBody.querySelectorAll('.review-action-btn');
-    actionButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        this.handleAction(btn.dataset.action);
-      });
+    // Render controls and actions in footer
+    this.modalFooter.innerHTML = `
+      <div class="review-footer-row">
+        <div class="review-controls">
+          <div class="review-control-group">
+            <label class="review-control-label">Status</label>
+            <select class="form-select review-select" data-field="status">
+              ${optionHtml(statusOptions, item.status)}
+            </select>
+          </div>
+          <div class="review-control-group">
+            <label class="review-control-label">Priority</label>
+            <select class="form-select review-select" data-field="priority">
+              ${optionHtml(priorityOptions, item.priority)}
+            </select>
+          </div>
+          <div class="review-control-group">
+            <label class="review-control-label">Urgency</label>
+            <select class="form-select review-select" data-field="urgency">
+              ${optionHtml(urgencyOptions, item.urgency)}
+            </select>
+          </div>
+          <div class="review-control-group">
+            <label class="review-control-label">Target Date</label>
+            <input type="date" class="form-input review-date-input" data-field="targetDate" value="${item.targetDate || ''}">
+          </div>
+        </div>
+      </div>
+      <div class="review-footer-row">
+        <div class="review-progress">
+          ${this.currentIndex + 1} of ${this.overdueItems.length}
+        </div>
+        <div class="review-actions">
+          <button class="btn btn-secondary review-action-btn" data-action="archive">Archive</button>
+          <button class="btn btn-primary review-confirm-btn">Confirm & Next</button>
+        </div>
+      </div>
+    `;
+
+    // Confirm button
+    this.modalFooter.querySelector('.review-confirm-btn').addEventListener('click', () => {
+      this.handleSave();
+    });
+
+    // Archive button
+    this.modalFooter.querySelector('.review-action-btn').addEventListener('click', () => {
+      this.handleAction('archive');
     });
   }
 
@@ -113,30 +146,11 @@ class DailyReviewModal {
 
     try {
       switch (action) {
-        case 'renew':
-          // Set target date to today
-          await window.api.items.update(item.id, {
-            targetDate: window.helpers.getToday()
-          });
-          break;
-
-        case 'deprioritize':
-          // Lower priority and urgency
-          const newPriority = this.lowerPriority(item.priority);
-          const newUrgency = this.lowerUrgency(item.urgency);
-          await window.api.items.update(item.id, {
-            priority: newPriority,
-            urgency: newUrgency
-          });
-          break;
-
         case 'archive':
-          // Archive the item
           await window.api.items.archive(item.id, 'manual');
           break;
       }
 
-      // Move to next item
       this.currentIndex++;
       this.renderCurrentItem();
     } catch (error) {
@@ -145,16 +159,28 @@ class DailyReviewModal {
     }
   }
 
-  lowerPriority(priority) {
-    const priorities = ['Critical', 'High', 'Medium', 'Low', 'Undefined'];
-    const currentIndex = priorities.indexOf(priority);
-    return priorities[Math.min(currentIndex + 1, priorities.length - 1)];
-  }
+  async handleSave() {
+    const item = this.overdueItems[this.currentIndex];
 
-  lowerUrgency(urgency) {
-    const urgencies = ['Burning', 'Today', 'Later', 'Undefined'];
-    const currentIndex = urgencies.indexOf(urgency);
-    return urgencies[Math.min(currentIndex + 1, urgencies.length - 1)];
+    const status = this.modalFooter.querySelector('[data-field="status"]').value;
+    const priority = this.modalFooter.querySelector('[data-field="priority"]').value;
+    const urgency = this.modalFooter.querySelector('[data-field="urgency"]').value;
+    const targetDate = this.modalFooter.querySelector('[data-field="targetDate"]').value;
+
+    try {
+      await window.api.items.update(item.id, {
+        status,
+        priority,
+        urgency,
+        targetDate: targetDate || null
+      });
+
+      this.currentIndex++;
+      this.renderCurrentItem();
+    } catch (error) {
+      console.error('Error saving review item:', error);
+      alert('Failed to update item: ' + error.message);
+    }
   }
 
   showSuccess() {
@@ -165,6 +191,9 @@ class DailyReviewModal {
         <p>All overdue items have been reviewed.</p>
       </div>
     `;
+
+    // Clear footer controls
+    this.modalFooter.innerHTML = '';
 
     // Auto-close after 2 seconds
     setTimeout(() => {

@@ -229,9 +229,12 @@ class TaskList {
       row.classList.add('overdue');
     }
 
-    // Check if completed
+    // Check if completed or cancelled
     if (item.status === 'Completed') {
       row.classList.add('completed');
+    }
+    if (item.status === 'Cancelled') {
+      row.classList.add('cancelled');
     }
 
     // Create checkbox (disabled for archived items)
@@ -239,6 +242,9 @@ class TaskList {
     checkbox.className = 'task-checkbox';
     if (item.status === 'Completed') {
       checkbox.classList.add('checked');
+    }
+    if (item.status === 'Cancelled') {
+      checkbox.classList.add('cancelled');
     }
     if (isArchived) {
       checkbox.classList.add('disabled');

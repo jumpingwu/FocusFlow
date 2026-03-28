@@ -184,15 +184,20 @@
   <div class="modal-overlay" id="daily-review-modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Daily Review</h2>
-        <span class="modal-subtitle">You have overdue items to review</span>
+        <div class="modal-header-left">
+          <h2>Daily Review</h2>
+          <span class="modal-subtitle">You have overdue items to review</span>
+        </div>
+        <div class="modal-header-right">
+          <button class="btn btn-secondary" id="review-skip">Skip for now</button>
+          <button class="btn btn-primary" id="review-complete">Complete Review</button>
+        </div>
       </div>
       <div class="modal-body" id="review-modal-body">
         <!-- Overdue items will be dynamically inserted -->
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" id="review-skip">Skip for now</button>
-        <button class="btn btn-primary" id="review-complete">Complete Review</button>
+      <div class="modal-footer" id="review-modal-footer">
+        <!-- Controls and action buttons rendered by JS -->
       </div>
     </div>
   </div>
